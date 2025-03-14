@@ -1,6 +1,9 @@
 package com.study.myshop.repository;
 
+import com.study.myshop.domain.Address;
 import com.study.myshop.domain.member.Member;
+import com.study.myshop.dto.customer.CustomerRequestDto;
+import com.study.myshop.service.MemberService;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,20 +20,39 @@ import static org.junit.Assert.*;
 @SpringBootTest
 public class MemberRepositoryTest {
 
+    @Autowired MemberService memberService;
     @Autowired MemberRepository memberRepository;
 
     @Test
-    public void testMember() throws Exception {
+    public void 고객_회원가입() throws Exception {
         //given
-        Member member = Member.createCustomer("userA", "123", "1111-1111");
+        CustomerRequestDto request = new CustomerRequestDto("userA", "123", "123-123",
+                "city", "street", "zipcode");
 
         //when
-        Member saveMember = memberRepository.save(member);
+        Long saveId = memberService.joinCustomer(request);
 
         //then
-        Optional<Member> foundMember = memberRepository.findById(saveMember.getId());
-        assertThat(foundMember).isPresent();
-        assertThat(foundMember.get().getUsername()).isEqualTo("userA");
+        Member foundMember = memberRepository.findById(saveId).get();
+        assertEquals(saveId, foundMember.getId());
+    }
+
+    @Test
+    public void testJoin() throws Exception {
+        //given
+        CustomerRequestDto requestDto = new CustomerRequestDto("userA", "123", "123-123",
+                "city", "street", "zipcode");
+
+
+        //when
+        Long id = memberService.joinCustomer(requestDto);
+        Member saveMember = memberRepository.findOneById(id);
+
+        System.out.println("id = " + id);
+        System.out.println("saveMember = " + saveMember.getId());
+
+        //then
+        org.junit.jupiter.api.Assertions.assertEquals(id, saveMember.getId());
     }
 
 }

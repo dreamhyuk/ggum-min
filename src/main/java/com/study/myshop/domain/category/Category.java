@@ -49,10 +49,22 @@ public class Category {
     }
 
     /* 생성 메서드 */
-    public static Category createCategory(String name, CategoryType type, Category parent) {
+    public static Category createStoreCategory(String name, Category parent) {
         Category category = new Category();
         category.name = name;
-        category.type = type;
+        category.type = CategoryType.STORE;
+        if (parent != null) {
+            category.parent = parent;
+            parent.getChild().add(category);
+        }
+
+        return category;
+    }
+
+    public static Category createMenuCategory(String name, Category parent) {
+        Category category = new Category();
+        category.name  = name;
+        category.type = CategoryType.MENU;
         if (parent != null) {
             category.parent = parent;
             parent.getChild().add(category);
