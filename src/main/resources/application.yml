@@ -20,3 +20,6 @@ logging:
 #    org.hibernate.SQL: info
 #    org.hibernate.type: trace #스프링 부트 2.x, hibernate5
 #    org.hibernate.orm.jdbc.bind: trace #스프링 부트 3.x, hibernate6
+
+jwt:
+  secret: bXktc2VjcmV0LWtleS1teS1zZWNyZXQta2V5LW15LXNlY3JldC1rZXk=

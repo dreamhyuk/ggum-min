@@ -19,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
 
-    @InjectMocks
-    MemberService memberService;
+    @InjectMocks MemberService memberService;
+    @InjectMocks AuthService authService;
     @Mock
     MemberRepository memberRepository;
 
@@ -35,9 +35,9 @@ class MemberServiceTest {
 
         //when
         Mockito.when(memberRepository.save(Mockito.any(Member.class))).thenReturn(mockMember);
-        System.out.println("mockMember = " + mockMember.getRoleName());
+        System.out.println("mockMember = " + mockMember.getRole().name());
 
-        Long id = memberService.joinCustomer(request);
+        Long id = authService.joinCustomer(request);
 
         //then
         assertNotNull(mockMember);
@@ -55,9 +55,9 @@ class MemberServiceTest {
 
         //when
         Mockito.when(memberRepository.save(Mockito.any(Member.class))).thenReturn(mockMember);
-        System.out.println("mockMember = " + mockMember.getRoleName());
+        System.out.println("mockMember = " + mockMember.getRole().name());
 
-        memberService.joinOwner(request);
+        authService.joinOwner(request);
 
         //then
         assertNotNull(mockMember);
@@ -74,9 +74,9 @@ class MemberServiceTest {
 
         //when
         Mockito.when(memberRepository.save(Mockito.any(Member.class))).thenReturn(mockMember);
-        System.out.println("mockMember = " + mockMember.getRoleName());
+        System.out.println("mockMember = " + mockMember.getRole().name());
 
-        memberService.joinRider(request);
+        authService.joinRider(request);
 
         //then
         assertNotNull(mockMember);

@@ -8,9 +8,12 @@ import com.study.myshop.dto.rider.RiderRequestDto;
 import com.study.myshop.provider.JwtTokenProvider;
 import com.study.myshop.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -20,40 +23,15 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    /**
-     * 회원 가입
-     */
-    @Transactional
-    public Long joinCustomer(CustomerRequestDto request) {
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
-        Address address = new Address(request.getCity(), request.getStreet(), request.getZipcode());
 
-        Member member = Member.createCustomer(request.getUsername(), encodedPassword, request.getPhoneNumber(), address);
-//        Member member = Member.createCustomer2(request);
-
-        memberRepository.save(member);
-
-        return member.getId();
+    public List<Member> findAll() {
+        return memberRepository.findAll();
     }
 
-    @Transactional
-    public Long joinOwner(OwnerRequestDto request) {
-        Member member = Member.createOwner2(request);
-        memberRepository.save(member);
-
-        return member.getId();
+    public Member findByUsername(String username) {
+        return memberRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없음."));
     }
-
-    @Transactional
-    public Long joinRider(RiderRequestDto request) {
-        Member member = Member.createRider2(request);
-        memberRepository.save(member);
-
-        return member.getId();
-    }
-
-
-
 
 
 }

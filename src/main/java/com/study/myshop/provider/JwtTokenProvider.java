@@ -1,16 +1,18 @@
 package com.study.myshop.provider;
 
 import com.study.myshop.authentication.CustomUserDetails;
-import io.jsonwebtoken.Claims;
+import com.study.myshop.domain.member.Member;
+import com.study.myshop.domain.member.Role;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -20,23 +22,39 @@ import java.util.List;
 @Component
 public class JwtTokenProvider {
 
-    private final String secretKey = "my-secret-key-my-secret-key-my-secret-key"; //실제 프로젝트에선 환경 변수로 관리, 256bit 이상 길이 필요
-    private final long validityInMilliseconds = 3600000; //1시간 유효
-    private final Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
+    private final Key key;
+    private final long accessTokenValidity = 1000L * 60 * 30; //30분
+    private final long refreshTokenValidity = 1000L * 60 * 60 * 24 * 7; //7일
 
-    /* jwt 생성 */
-    public String createToken(String username, String role) {
-        Claims claims = Jwts.claims().setSubject(username);
-        claims.put("role", role);
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+        System.out.println("jwt.secret = " + secretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
+    }
 
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
-
+    /* jwt 토큰 생성 */
+    /**
+     *  access token 생성
+     */
+    public String createAccessToken(Long userId, Role role) {
         return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now) //발급 시간
-                .setExpiration(validity) //만료 시간
-                .signWith(key, SignatureAlgorithm.HS256) //서명
+                .setSubject(String.valueOf(userId))
+                .claim("role", role.name())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity)) //30분 유효
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    /**
+     *  refresh token 생성
+     */
+    public String createRefreshToken(Long userId) {
+        return Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenValidity)) //7일 유효
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -50,24 +68,12 @@ public class JwtTokenProvider {
         }
     }
 
+    public Authentication getAuthentication(String token, Member member) {
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(member.getRole().name()));
 
-    public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        CustomUserDetails userDetails = new CustomUserDetails(member);
 
-        String username = claims.getSubject();
-        String role = claims.get("role", String.class); //role 정보 추출
-
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
-
-        //jwt에서 추출한 정보를 기반으로 CustomUserDetails객체 생성
-        UserDetails userDetails = new CustomUserDetails(username, authorities);
-
-        return new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-
+        return new UsernamePasswordAuthenticationToken(userDetails, token, authorities);
     }
 
 }

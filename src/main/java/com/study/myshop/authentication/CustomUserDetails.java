@@ -1,18 +1,37 @@
 package com.study.myshop.authentication;
 
+import com.study.myshop.domain.member.Member;
+import com.study.myshop.domain.member.Role;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+@Getter
 @RequiredArgsConstructor
-public class CustomUserDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails, Serializable {
 
-    private final String username;
-    private final List<GrantedAuthority> authorities;
+    private static final long serialVersionUID = 1L;
+
+    private Long id;
+    private String username;
+    private String password;
+    private Role role;
+    private List<GrantedAuthority> authorities;
+
+    public CustomUserDetails(Member member) {
+        this.id = member.getId();
+        this.username = member.getUsername();
+        this.password = member.getPassword();
+        this.role = member.getRole();
+        this.authorities = List.of(new SimpleGrantedAuthority(member.getRole().name()));
+    }
 
     @Override
     public String getUsername() {

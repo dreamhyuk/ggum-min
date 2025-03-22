@@ -1,14 +1,23 @@
 package com.study.myshop.api;
 
-import com.study.myshop.domain.member.Member;
+import com.study.myshop.authentication.CustomUserDetails;
+import com.study.myshop.dto.customer.CustomerRequestDto;
+import com.study.myshop.dto.customer.CustomerResponseDto;
 import com.study.myshop.dto.login.LoginRequestDto;
 import com.study.myshop.dto.login.LoginResponseDto;
-import com.study.myshop.repository.MemberRepository;
+import com.study.myshop.dto.owner.OwnerRequestDto;
+import com.study.myshop.dto.owner.OwnerResponseDto;
+import com.study.myshop.dto.rider.RiderRequestDto;
+import com.study.myshop.dto.rider.RiderResponseDto;
+import com.study.myshop.provider.JwtTokenProvider;
 import com.study.myshop.service.AuthService;
+import com.study.myshop.service.RefreshTokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,18 +30,56 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthApiController {
 
     private final AuthService authService;
-    private final MemberRepository memberRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenService refreshTokenService;
+
+
+    /* 회원 가입 */
+    @PostMapping("/new/customer")
+    public ResponseEntity<CustomerResponseDto> saveCustomer(@RequestBody @Valid CustomerRequestDto request) {
+        Long id = authService.joinCustomer(request);
+
+        CustomerResponseDto response = new CustomerResponseDto(id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/new/owner")
+    public ResponseEntity<OwnerResponseDto> saveOwner(@RequestBody @Valid OwnerRequestDto request) {
+        Long id = authService.joinOwner(request);
+
+        OwnerResponseDto response = new OwnerResponseDto(id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/new/rider")
+    public ResponseEntity<RiderResponseDto> saveRider(@RequestBody @Valid RiderRequestDto request) {
+        Long id = authService.joinRider(request);
+
+        RiderResponseDto response = new RiderResponseDto(id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto request) {
-        String token = authService.authenticate(request);
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
-        Member member = memberRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+        CustomUserDetails customUserDetails = authService.authenticate(request);
 
-        String redirectUrl = member.getRole().getRedirectUrlByRole();
+        //redirect url
+        String redirectUrl = customUserDetails.getRole().getRedirectUrlByRole();
 
-        return ResponseEntity.ok(new LoginResponseDto(token, redirectUrl));
+        //access 토큰 생성
+        String accessToken = jwtTokenProvider.createAccessToken(customUserDetails.getId(), customUserDetails.getRole());
+
+        //refresh 토큰 생성
+        String refreshToken = jwtTokenProvider.createRefreshToken(customUserDetails.getId());
+        refreshTokenService.save(refreshToken, customUserDetails.getUsername());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.AUTHORIZATION, "Bearer" + accessToken)
+                .body(new LoginResponseDto(redirectUrl, refreshToken));
     }
 
 }

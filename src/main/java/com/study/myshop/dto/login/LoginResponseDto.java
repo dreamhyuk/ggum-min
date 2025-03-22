@@ -7,7 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class LoginResponseDto {
 
-    private String token;
     private String redirectUrl;
-
+    private String refreshToken;
 }

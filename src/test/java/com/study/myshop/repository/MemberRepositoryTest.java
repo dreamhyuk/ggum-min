@@ -3,6 +3,7 @@ package com.study.myshop.repository;
 import com.study.myshop.domain.Address;
 import com.study.myshop.domain.member.Member;
 import com.study.myshop.dto.customer.CustomerRequestDto;
+import com.study.myshop.service.AuthService;
 import com.study.myshop.service.MemberService;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -22,6 +23,7 @@ public class MemberRepositoryTest {
 
     @Autowired MemberService memberService;
     @Autowired MemberRepository memberRepository;
+    @Autowired AuthService authService;
 
     @Test
     public void 고객_회원가입() throws Exception {
@@ -30,7 +32,7 @@ public class MemberRepositoryTest {
                 "city", "street", "zipcode");
 
         //when
-        Long saveId = memberService.joinCustomer(request);
+        Long saveId = authService.joinCustomer(request);
 
         //then
         Member foundMember = memberRepository.findById(saveId).get();
@@ -45,7 +47,7 @@ public class MemberRepositoryTest {
 
 
         //when
-        Long id = memberService.joinCustomer(requestDto);
+        Long id = authService.joinCustomer(requestDto);
         Member saveMember = memberRepository.findOneById(id);
 
         System.out.println("id = " + id);
