@@ -44,14 +44,14 @@ public class OrderMenu {
                 .count(count)
                 .build();
 
-        menu.removeStock(count);
+//        menu.removeStock(count);
         return orderMenu;
     }
 
     /* 비즈니스 로직 */
-    public void cancel() {
-        getMenu().addStock(count);
-    }
+//    public void cancel() {
+//        getMenu().addStock(count);
+//    }
 
     /* 조회 로직 */
     /**

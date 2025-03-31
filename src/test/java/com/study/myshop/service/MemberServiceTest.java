@@ -1,5 +1,6 @@
 package com.study.myshop.service;
 
+import com.study.myshop.domain.Address;
 import com.study.myshop.domain.member.Member;
 import com.study.myshop.dto.customer.CustomerRequestDto;
 import com.study.myshop.dto.owner.OwnerRequestDto;
@@ -30,8 +31,8 @@ class MemberServiceTest {
         CustomerRequestDto request = new CustomerRequestDto("userA", "password123", "123-123",
                 "seoul", "street", "12345");
 
-        Member mockMember = Member.createCustomer2(request);
-//        Member mockMember = new Member(1L, "userA", "password123", "123-123");
+        Member mockMember = Member.createCustomer("userA", "password123", "123-123",
+                new Address("seoul", "street", "12345"));
 
         //when
         Mockito.when(memberRepository.save(Mockito.any(Member.class))).thenReturn(mockMember);
@@ -51,7 +52,7 @@ class MemberServiceTest {
         OwnerRequestDto request = new OwnerRequestDto("ownerA", "123", "1234",
                 "12345");
 
-        Member mockMember = Member.createOwner2(request);
+        Member mockMember = Member.createOwner("ownerA", "123", "1234", "12345");
 
         //when
         Mockito.when(memberRepository.save(Mockito.any(Member.class))).thenReturn(mockMember);
@@ -68,9 +69,9 @@ class MemberServiceTest {
     @Test
     public void 라이더_회원가입() throws Exception {
         //given
-        RiderRequestDto request = new RiderRequestDto("riderA", "123", "1234-1234",
-                "qwer");
-        Member mockMember = Member.createRider2(request);
+        RiderRequestDto request = new RiderRequestDto("riderA", "123", "1234-1234", "qwer");
+
+        Member mockMember = Member.createRider("riderA", "123", "1234-1234", "qwer");
 
         //when
         Mockito.when(memberRepository.save(Mockito.any(Member.class))).thenReturn(mockMember);
@@ -83,7 +84,5 @@ class MemberServiceTest {
         assertEquals("riderA", mockMember.getUsername());
         Mockito.verify(memberRepository, Mockito.times(1)).save(Mockito.any(Member.class));
     }
-
-
 
 }

@@ -93,19 +93,19 @@ public class Member {
         return member;
     }
 
-    public static Member createCustomer2(CustomerRequestDto request) {
-        Member member = new Member();
-        member.username = request.getUsername();
-        member.password = request.getPassword();
-        member.phoneNumber = request.getPhoneNumber();
-        member.role = Role.ROLE_CUSTOMER;
-
-        Address address = new Address(request.getCity(), request.getStreet(), request.getZipcode());
-        CustomerProfile profile = new CustomerProfile(address);
-        member.addCustomerProfile(profile);
-
-        return member;
-    }
+//    public static Member createCustomer2(CustomerRequestDto request) {
+//        Member member = new Member();
+//        member.username = request.getUsername();
+//        member.password = request.getPassword();
+//        member.phoneNumber = request.getPhoneNumber();
+//        member.role = Role.ROLE_CUSTOMER;
+//
+//        Address address = new Address(request.getCity(), request.getStreet(), request.getZipcode());
+//        CustomerProfile profile = new CustomerProfile(address);
+//        member.addCustomerProfile(profile);
+//
+//        return member;
+//    }
 
     public static Member createOwner(String username, String password, String phoneNumber, String businessNumber) {
         Member member = new Member();
@@ -120,18 +120,18 @@ public class Member {
         return member;
     }
 
-    public static Member createOwner2(OwnerRequestDto request) {
-        Member member = new Member();
-        member.username = request.getUsername();
-        member.password = request.getPassword();
-        member.phoneNumber = request.getPhoneNumber();
-        member.role = Role.ROLE_STORE_OWNER;
-
-        OwnerProfile profile = new OwnerProfile(request.getBusinessNumber());
-        member.addOwnerProfile(profile);
-
-        return member;
-    }
+//    public static Member createOwner2(OwnerRequestDto request) {
+//        Member member = new Member();
+//        member.username = request.getUsername();
+//        member.password = request.getPassword();
+//        member.phoneNumber = request.getPhoneNumber();
+//        member.role = Role.ROLE_STORE_OWNER;
+//
+//        OwnerProfile profile = new OwnerProfile(request.getBusinessNumber());
+//        member.addOwnerProfile(profile);
+//
+//        return member;
+//    }
 
     public static Member createRider(String username, String password, String phoneNumber, String vehicleType) {
         Member member = new Member();
@@ -146,17 +146,17 @@ public class Member {
         return member;
     }
 
-    public static Member createRider2(RiderRequestDto request) {
-        Member member = new Member();
-        member.username = request.getUsername();
-        member.password = request.getPassword();
-        member.phoneNumber = request.getPhoneNumber();
-        member.role = Role.ROLE_RIDER;
-
-        RiderProfile profile = new RiderProfile(request.getVehicleType());
-        member.addRiderProfile(profile);
-
-        return member;
-    }
+//    public static Member createRider2(RiderRequestDto request) {
+//        Member member = new Member();
+//        member.username = request.getUsername();
+//        member.password = request.getPassword();
+//        member.phoneNumber = request.getPhoneNumber();
+//        member.role = Role.ROLE_RIDER;
+//
+//        RiderProfile profile = new RiderProfile(request.getVehicleType());
+//        member.addRiderProfile(profile);
+//
+//        return member;
+//    }
 
 }

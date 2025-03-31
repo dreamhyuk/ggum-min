@@ -39,7 +39,6 @@ public class AuthService {
     @Transactional
     public Long joinCustomer(CustomerRequestDto request) {
         String encodedPassword = passwordEncoder.encode(request.getPassword());
-        System.out.println("encodedPassword = " + encodedPassword);
         Address address = new Address(request.getCity(), request.getStreet(), request.getZipcode());
 
         Member member = Member.createCustomer(request.getUsername(), encodedPassword, request.getPhoneNumber(), address);

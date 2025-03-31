@@ -78,7 +78,7 @@ public class AuthApiController {
         refreshTokenService.save(refreshToken, customUserDetails.getUsername());
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.AUTHORIZATION, "Bearer" + accessToken)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .body(new LoginResponseDto(redirectUrl, refreshToken));
     }
 

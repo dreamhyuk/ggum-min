@@ -1,5 +1,5 @@
 package com.study.myshop.domain;
 
 public enum DeliveryStatus {
-    READY, COMP
+    PICK_UP, DELIVERED
 }
