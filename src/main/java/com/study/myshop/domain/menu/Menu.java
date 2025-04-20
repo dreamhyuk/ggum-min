@@ -1,17 +1,17 @@
 package com.study.myshop.domain.menu;
 
-import com.study.myshop.domain.MenuCategoryMapping;
 import com.study.myshop.domain.OrderMenu;
+import com.study.myshop.domain.Store;
 import com.study.myshop.domain.category.MenuCategory;
-import com.study.myshop.exception.NotEnoughStockException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static jakarta.persistence.FetchType.*;
 
 @Entity
 @Table(name = "menus")
@@ -27,32 +27,60 @@ public class Menu {
 
     private int price;
 
-//    private int stockQuantity; //(배달 어플에서) 재고 수량이 필요한가? 필요 없을 거 같다..
+//    private int stockQuantity; //(배달 어플에서) 재고 수량이 필요한가? 필요 없을 거 같다.
 //    private boolean isRecommended; //대표메뉴 여부
 
     @OneToMany(mappedBy = "menu")
     private List<OrderMenu> orderMenus = new ArrayList<>();
 
-    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
-    private List<MenuCategoryMapping> menuCategoryMappings = new ArrayList<>();
+    //메뉴가 굳이 여러 카테고리에 포함될 필요가 있나? (중간 테이블이 없어도 될 듯)
+//    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
+//    private List<MenuCategoryMapping> menuCategoryMappings = new ArrayList<>();
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "menu_category_id")
+    private MenuCategory menuCategory;
 
-    /* 연관관계 편의 메서드 */
-    public void addMenuCategoryMapping(MenuCategoryMapping menuCategoryMapping) {
-        menuCategoryMappings.add(menuCategoryMapping);
-        menuCategoryMapping.setMenu(this);
-    }
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "store_id")
+    private Store store;
 
-    private Menu(String name, int price, MenuCategoryMapping menuCategoryMapping) {
+
+    private Menu(String name, int price, MenuCategory menuCategory, Store store) {
         this.name = name;
         this.price = price;
-        this.addMenuCategoryMapping(menuCategoryMapping);
+        this.setMenuCategory(menuCategory);
+        this.setStore(store);
+    }
+
+    /* 연관관계 편의 메서드 */
+    public void setMenuCategory(MenuCategory menuCategory) {
+        this.menuCategory = menuCategory;
+        menuCategory.getMenus().add(this);
+    }
+
+    public void setStore(Store store) {
+        this.store = store;
     }
 
     /* 생성 메서드 */
-    public static Menu addMenu(String name, int price, MenuCategoryMapping menuCategoryMapping) {
-        return new Menu(name, price, menuCategoryMapping);
+    public static Menu createMenu(String name, int price, MenuCategory menuCategory, Store store) {
+        return new Menu(name, price, menuCategory, store);
     }
 
+
+    public void updateMenu(String name, int price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    //update를 PATCH로 하기 위해 필드 변경 메서드를 개별적으로 나눠봤다.
+    public void changeName(String name) {
+        this.name = name;
+    }
+
+    public void changPrice(int price) {
+        this.price = price;
+    }
 
     /* 비즈니스 로직 */
 //    /**

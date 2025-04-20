@@ -1,6 +1,7 @@
 package com.study.myshop.domain.category;
 
-import com.study.myshop.domain.MenuCategoryMapping;
+import com.study.myshop.domain.Store;
+import com.study.myshop.domain.menu.Menu;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -8,6 +9,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static jakarta.persistence.FetchType.*;
 
 
 @Entity
@@ -21,11 +24,27 @@ public class MenuCategory {
 
     private String name; //메인, 사이드, 음료 등..
 
-    public MenuCategory(String name) {
-        this.name = name;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "store_id")
+    private Store store;
+
+    @OneToMany(mappedBy = "menuCategory")
+    private List<Menu> menus = new ArrayList<>();
+
+    public void setStore(Store store) {
+        this.store = store;
     }
 
-    public static MenuCategory createCategory(String name) {
-        return new MenuCategory(name);
+    public static MenuCategory createCategory(String name, Store store) {
+        MenuCategory menuCategory = new MenuCategory();
+        menuCategory.name = name;
+        menuCategory.store = store;
+        return menuCategory;
     }
+
+    public void update(String menuCategoryName) {
+        this.name = menuCategoryName;
+    }
+
+
 }

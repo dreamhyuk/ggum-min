@@ -7,7 +7,7 @@ import com.study.myshop.dto.customer.CustomerRequestDto;
 import com.study.myshop.dto.login.LoginRequestDto;
 import com.study.myshop.dto.owner.OwnerRequestDto;
 import com.study.myshop.dto.rider.RiderRequestDto;
-import com.study.myshop.provider.JwtTokenProvider;
+import com.study.myshop.security.JwtTokenProvider;
 import com.study.myshop.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

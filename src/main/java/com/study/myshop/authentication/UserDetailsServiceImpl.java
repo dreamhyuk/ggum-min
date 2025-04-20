@@ -1,6 +1,7 @@
 package com.study.myshop.authentication;
 
 import com.study.myshop.domain.member.Member;
+import com.study.myshop.exception.MemberNotFoundException;
 import com.study.myshop.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +26,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         //2. 기본 생성자 생성 후 값 세팅
 //        CustomUserDetails customUserDetails2 = new CustomUserDetails();
 //        customUserDetails2. ...
+
+        return customUserDetails;
+    }
+
+    public UserDetails loadUserById(Long userId) throws MemberNotFoundException {
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new MemberNotFoundException("해당 유저를 찾을 수 없음."));
+
+        CustomUserDetails customUserDetails = new CustomUserDetails(member);
 
         return customUserDetails;
     }

@@ -1,8 +1,11 @@
 package com.study.myshop.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.study.myshop.domain.category.StoreCategory;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 import static jakarta.persistence.FetchType.*;
 
@@ -15,6 +18,7 @@ public class StoreCategoryMapping {
     @Column(name = "store_category_mapping_id")
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "store_id")
     @Setter

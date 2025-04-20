@@ -15,4 +15,10 @@ public class AddressDto {
     public Address toEntity() {
         return new Address(city, street, zipcode);
     }
+
+    public AddressDto(Address address) {
+        this.city = address.getCity();
+        this.street = address.getStreet();
+        this.zipcode = address.getZipcode();
+    }
 }

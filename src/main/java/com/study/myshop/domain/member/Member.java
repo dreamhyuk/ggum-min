@@ -1,5 +1,6 @@
 package com.study.myshop.domain.member;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.study.myshop.domain.Address;
 import com.study.myshop.domain.Order;
 import com.study.myshop.domain.member.profile.CustomerProfile;
@@ -27,6 +28,7 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
 
@@ -50,9 +52,6 @@ public class Member {
     private String password;
     private String phoneNumber;
 
-//    public String getRoleName() {
-//        return role.name();
-//    }
 
     //테스트 생성자
     public Member(Long id, String username, String password, String phoneNumber) {

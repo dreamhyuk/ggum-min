@@ -1,4 +1,4 @@
-package com.study.myshop.provider;
+package com.study.myshop.security;
 
 import com.study.myshop.authentication.CustomUserDetails;
 import com.study.myshop.domain.member.Member;
@@ -8,6 +8,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -58,6 +59,13 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public Long getUserIdFromToken(String token) {
+//        String subject = Jwts.parser().setSigningKey(key).parseClaimsJws(token)
+        String subject = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token)
+                .getBody().getSubject();
+        return Long.parseLong(subject);
+    }
+
     /* jwt 검증 */
     public boolean validationToken(String token) {
         try {
@@ -67,6 +75,17 @@ public class JwtTokenProvider {
             return false;
         }
     }
+
+    /* access 토큰 추출 */
+    public String resolveToken(HttpServletRequest request) {
+        String bearer = request.getHeader("Authorization");
+        if (bearer != null && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
+        }
+        return null;
+    }
+
+
 
     public Authentication getAuthentication(String token, Member member) {
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(member.getRole().name()));

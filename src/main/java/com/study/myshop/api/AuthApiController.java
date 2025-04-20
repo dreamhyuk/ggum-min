@@ -9,7 +9,7 @@ import com.study.myshop.dto.owner.OwnerRequestDto;
 import com.study.myshop.dto.owner.OwnerResponseDto;
 import com.study.myshop.dto.rider.RiderRequestDto;
 import com.study.myshop.dto.rider.RiderResponseDto;
-import com.study.myshop.provider.JwtTokenProvider;
+import com.study.myshop.security.JwtTokenProvider;
 import com.study.myshop.service.AuthService;
 import com.study.myshop.service.RefreshTokenService;
 import jakarta.validation.Valid;
