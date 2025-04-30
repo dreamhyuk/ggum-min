@@ -4,20 +4,33 @@ import com.study.myshop.authentication.CustomUserDetails;
 import com.study.myshop.domain.Address;
 import com.study.myshop.domain.Store;
 import com.study.myshop.domain.StoreCategoryMapping;
+import com.study.myshop.domain.category.MenuCategory;
 import com.study.myshop.domain.category.StoreCategory;
 import com.study.myshop.domain.member.Member;
+import com.study.myshop.dto.AddressDto;
+import com.study.myshop.dto.MenuCategoryDto;
+import com.study.myshop.dto.StoreCategoryDto;
+import com.study.myshop.dto.menu.MenuDto;
+import com.study.myshop.dto.owner.OwnerDto;
 import com.study.myshop.dto.store.CreateStoreRequest;
+import com.study.myshop.dto.store.StoreResponseDto;
+import com.study.myshop.dto.store.StoreWithCategoriesDto;
 import com.study.myshop.dto.store.UpdateStoreInfoRequest;
 import com.study.myshop.exception.MemberNotFoundException;
 import com.study.myshop.repository.MemberRepository;
 import com.study.myshop.repository.MenuRepository;
 import com.study.myshop.repository.StoreCategoryRepository;
 import com.study.myshop.repository.StoreRepository;
+import com.study.myshop.repository.query.MenuCategoryQueryRepository;
+import com.study.myshop.repository.query.MenuQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -29,7 +42,8 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final MemberRepository memberRepository;
     private final StoreCategoryRepository storeCategoryRepository;
-    private final MenuRepository menuRepository;
+    private final MenuCategoryQueryRepository menuCategoryQueryRepository;
+    private final MenuQueryRepository menuQueryRepository;
 
 
     @Transactional
@@ -62,6 +76,13 @@ public class StoreService {
         return storeRepository.findByCategoryId(categoryId);
     }
 
+    public List<Store> findByCategoryName(String categoryName) {
+        StoreCategory storeCategory = storeCategoryRepository.findByName(categoryName)
+                .orElseThrow(() -> new IllegalArgumentException("해당 카테고리 없음: " + categoryName));
+
+        return storeRepository.findByCategoryId(storeCategory.getId());
+    }
+
 
     //클라이언트에서 categoryId로 받기 때문에, 변환하는 메서드를 만들었다.
     private List<StoreCategoryMapping> createMappings(List<Long> categoryIds) {
@@ -82,31 +103,50 @@ public class StoreService {
         store.updateInfo(request);
     }
 
-//    @Transactional
-//    public void addMenus(Long storeId, UpdateStoreMenuRequest request) {
-//        Store store = storeRepository.findById(storeId)
-//                .orElseThrow(() -> new IllegalArgumentException("해당 매장을 찾을 수 없음!"));
-//
-//        List<Menu> findMenus = menuRepository.findAllById(request.getMenuIds());
-//
-//        store.addMenus(findMenus);
-//    }
-//
-//    @Transactional
-//    public void removeMenus(Long storeId, UpdateStoreMenuRequest request) {
-//        Store store = storeRepository.findById(storeId)
-//                .orElseThrow(() -> new IllegalArgumentException("해당 매장을 찾을 수 없음."));
-//
-//        List<Menu> findMenus = menuRepository.findAllById(request.getMenuIds());
-//
-//        store.removeMenus(findMenus);
-//    }
 
 
     public Store findOne(Long storeId) {
         return storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 매장을 찾을 수 없음."));
     }
+
+    /**
+     * store + storeCategory는 fetch join
+     * menuCategory와 menu는 각각 개별 조회
+     * 후에 그룹핑
+     */
+    public StoreResponseDto getStoreDetail(Long storeId) {
+
+        Store storeWithCategories = storeRepository.findStoreWithCategories(storeId);
+        List<MenuCategoryDto> menuCategoryDtos = menuCategoryQueryRepository.findMenuCategoryDtosByStoreId(storeId);
+        List<MenuDto> menuDtos = menuQueryRepository.findMenuDtosByMenuCategoryIds(storeId);
+
+        //메뉴를 카테고리 id 기준으로 그룹핑
+        Map<Long, List<MenuDto>> menusByCategoryId = menuDtos.stream()
+                .collect(Collectors.groupingBy(MenuDto::getMenuCategoryId));
+
+        //메뉴 카테고리에 메뉴 할당
+        for (MenuCategoryDto menuCategoryDto: menuCategoryDtos) {
+            List<MenuDto> categoryMenus = menusByCategoryId.getOrDefault(menuCategoryDto.getMenuCategoryId(), Collections.emptyList());
+            menuCategoryDto.setMenus(categoryMenus);
+        }
+
+        List<StoreCategoryDto> storeCategoryDtos = storeWithCategories.getStoreCategoryMappings().stream()
+                .map(scm -> new StoreCategoryDto(scm.getStoreCategory()))
+                .collect(toList());
+
+        return StoreResponseDto.from(storeWithCategories, storeCategoryDtos, menuCategoryDtos);
+
+    }
+
+    private static List<Long> toMenuCategoryIds(List<MenuCategoryDto> result) {
+        List<Long> menuCategoryIds = result.stream()
+                .map(mc -> mc.getMenuCategoryId())
+                .collect(toList());
+        return menuCategoryIds;
+    }
+
+
 
 
 }

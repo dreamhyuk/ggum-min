@@ -34,7 +34,9 @@ public class AuthApiController {
     private final RefreshTokenService refreshTokenService;
 
 
-    /* 회원 가입 */
+    /**
+     * 회원 가입
+     */
     @PostMapping("/new/customer")
     public ResponseEntity<CustomerResponseDto> saveCustomer(@RequestBody @Valid CustomerRequestDto request) {
         Long id = authService.joinCustomer(request);

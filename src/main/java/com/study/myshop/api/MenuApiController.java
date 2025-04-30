@@ -5,7 +5,6 @@ import com.study.myshop.common.ApiResponse;
 import com.study.myshop.domain.menu.Menu;
 import com.study.myshop.dto.menu.AddMenuRequest;
 import com.study.myshop.dto.menu.AddMenuResponse;
-import com.study.myshop.dto.menu.DeleteMenuResponse;
 import com.study.myshop.dto.menu.UpdateMenuResponse;
 import com.study.myshop.service.MenuService;
 import jakarta.validation.Valid;
@@ -49,7 +48,7 @@ public class MenuApiController {
         Long userId = userDetails.getId();
 
         menuService.updateMenu(storeId, menuCategoryId, menuId, request, userId);
-        Menu findMenu = menuService.findOne(storeId, menuCategoryId, menuId);
+        Menu findMenu = menuService.findOne(menuCategoryId, menuId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

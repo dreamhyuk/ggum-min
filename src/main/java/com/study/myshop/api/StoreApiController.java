@@ -3,6 +3,7 @@ package com.study.myshop.api;
 import com.study.myshop.authentication.CustomUserDetails;
 import com.study.myshop.common.ApiResponse;
 import com.study.myshop.domain.Store;
+import com.study.myshop.domain.StoreCategoryMapping;
 import com.study.myshop.dto.AddressDto;
 import com.study.myshop.dto.store.*;
 import com.study.myshop.service.StoreService;
@@ -23,7 +24,6 @@ import static java.util.stream.Collectors.toList;
 public class StoreApiController {
 
     private final StoreService storeService;
-
 
     /**
      * 등록
@@ -59,30 +59,57 @@ public class StoreApiController {
 
 
     /**
-     * 검색
+     * 가게 이름으로 검색
      */
-    //가게 이름으로 검색
-    @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<StoreResponseDto>>> searchStoresByName(@RequestParam("storeName") String storeName) {
+    @GetMapping("/search/name")
+    public ResponseEntity<ApiResponse<List<StoreSummaryDto>>> searchStoresByName(@RequestParam("storeName") String storeName) {
 
         List<Store> stores = storeService.findByStoreName(storeName);
-        List<StoreResponseDto> result = stores.stream()
-                .map(s -> new StoreResponseDto(s))
+        List<StoreSummaryDto> result = stores.stream()
+                .map(s -> new StoreSummaryDto(s))
                 .collect(toList());
 
         return ResponseEntity.ok(ApiResponse.success("가게 이름으로 검색", result));
     }
 
-    //카테고리별 가게 검색
+    /**
+     * 카테고리별 가게 검색
+     */
+    //Path Variable 방식 (간단한 조회에 맞음)
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<ApiResponse<List<StoreResponseDto>>> getStoresByCategory(@PathVariable("categoryId") Long categoryId) {
+    public ResponseEntity<ApiResponse<List<StoreSummaryDto>>> getStoresByCategory(@PathVariable("categoryId") Long categoryId) {
 
         List<Store> stores = storeService.findByCategory(categoryId);
-        List<StoreResponseDto> result = stores.stream()
-                .map(s -> new StoreResponseDto(s))
+        List<StoreSummaryDto> result = stores.stream()
+                .map(s -> new StoreSummaryDto(s))
                 .collect(toList());
 
-        return ResponseEntity.ok(ApiResponse.success("카테고리로 검색", result));
+        return ResponseEntity.ok(ApiResponse.success("카테고리로 PathVariable 검색", result));
+    }
+
+    //Query String 방식. 추가적인 필터 조건이 붙는다면 이 방법이 유리하다. (평점 높은 순, 주문 많은 순 등등..)
+    //사용자 입장에선 쿼리 파라미터로 categoryId보다 categoryName을 사용하는 게 더 직관적이다.
+    @GetMapping("/search/category")
+    public ResponseEntity<ApiResponse<List<StoreSummaryDto>>> searchStoresByCategory(@RequestParam("category-name") String categoryName) {
+
+        List<Store> stores = storeService.findByCategoryName(categoryName);
+        List<StoreSummaryDto> result = stores.stream()
+                .map(s -> new StoreSummaryDto(s))
+                .collect(toList());
+
+        return ResponseEntity.ok(ApiResponse.success("카테고리 RequestParam 검색", result));
+    }
+
+
+    /**
+     * 가게 상세 조회
+     */
+    @GetMapping("/{storeId}")
+    public ResponseEntity<ApiResponse<StoreResponseDto>> getStore(@PathVariable("storeId") Long storeId) {
+
+        StoreResponseDto storeDetail = storeService.getStoreDetail(storeId);
+
+        return ResponseEntity.ok(ApiResponse.success("가게 상세 조회", storeDetail));
     }
 
 }

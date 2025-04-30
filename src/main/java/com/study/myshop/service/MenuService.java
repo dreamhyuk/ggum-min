@@ -25,10 +25,10 @@ public class MenuService {
     @Transactional
     public Long saveMenu(Long storeId, Long menuCategoryId, AddMenuRequest request, Long userId) {
 
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 매장을 찾을 수 없음."));
+        Store findStore = storeRepository.findWithMemberById(storeId)
+                .orElseThrow(() -> new IllegalArgumentException("가게 없음."));
 
-        Long ownerId = store.getOwnerProfile().getMember().getId();
+        Long ownerId = findStore.getOwnerProfile().getMember().getId();
         if (!ownerId.equals(userId)) {
             throw new AccessDeniedException("권한이 없습니다.");
         }
@@ -36,7 +36,7 @@ public class MenuService {
         MenuCategory menuCategory = menuCategoryRepository.findByIdAndStoreId(menuCategoryId, storeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 메뉴 카테고리 없음."));
 
-        Menu menu = Menu.createMenu(request.getMenuName(), request.getPrice(), menuCategory, store);
+        Menu menu = Menu.createMenu(request.getMenuName(), request.getPrice(), menuCategory);
         menuRepository.save(menu);
 
         return menu.getId();
@@ -46,13 +46,16 @@ public class MenuService {
     @Transactional
     public void updateMenu(Long storeId, Long menuCategoryId, Long menuId, AddMenuRequest request, Long userId) {
 
-        Menu findMenu = menuRepository.findByIdAndStoreIdAndMenuCategoryId(menuId, storeId, menuCategoryId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 메뉴 없음."));
+        Store findStore = storeRepository.findWithMemberById(storeId)
+                .orElseThrow(() -> new IllegalArgumentException("가게 없음."));
 
-        Long ownerId = findMenu.getStore().getOwnerProfile().getMember().getId();
+        Long ownerId = findStore.getOwnerProfile().getMember().getId();
         if (!ownerId.equals(userId)) {
             throw new AccessDeniedException("권한이 없습니다.");
         }
+
+        Menu findMenu = menuRepository.findByIdAndMenuCategoryId(menuId, menuCategoryId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 메뉴 없음."));
 
 //        findMenu.updateMenu(request.getMenuName(), request.getPrice());
         if (request.getMenuName() != null) {
@@ -68,13 +71,16 @@ public class MenuService {
     @Transactional
     public Long removeMenu(Long storeId, Long menuCategoryId, Long menuId, Long userId) {
 
-        Menu findMenu = menuRepository.findByIdAndStoreIdAndMenuCategoryId(menuId, storeId, menuCategoryId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 메뉴 없음"));
+        Store findStore = storeRepository.findWithMemberById(storeId)
+                .orElseThrow(() -> new IllegalArgumentException("가게 없음."));
 
-        Long ownerId = findMenu.getStore().getOwnerProfile().getMember().getId();
+        Long ownerId = findStore.getOwnerProfile().getMember().getId();
         if (!ownerId.equals(userId)) {
             throw new AccessDeniedException("권한이 없습니다.");
         }
+
+        Menu findMenu = menuRepository.findByIdAndMenuCategoryId(menuId, menuCategoryId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 메뉴 없음"));
 
         menuRepository.delete(findMenu);
 
@@ -82,9 +88,8 @@ public class MenuService {
     }
 
 
-
-    public Menu findOne(Long storeId, Long menuCategoryId, Long menuId) {
-        return menuRepository.findByIdAndStoreIdAndMenuCategoryId(menuId, storeId, menuCategoryId)
+    public Menu findOne(Long menuCategoryId, Long menuId) {
+        return menuRepository.findByIdAndMenuCategoryId(menuId, menuCategoryId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 매장을 찾을 수 없음."));
     }
 

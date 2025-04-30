@@ -1,24 +1,24 @@
 package com.study.myshop.dto.menu;
 
-import com.study.myshop.domain.menu.Menu;
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class MenuDto {
 
     private Long menuId;
-    private String name;
+    private String menuName;
     private int price;
 
-    public MenuDto(Menu menu) {
-        menuId = menu.getId();
-        name = menu.getName();
-        price = menu.getPrice();
+    @JsonIgnore
+    private Long menuCategoryId;
+
+    public MenuDto(Long menuId, String menuName, int price, Long menuCategoryId) {
+        this.menuId = menuId;
+        this.menuName = menuName;
+        this.price = price;
+        this.menuCategoryId = menuCategoryId;
     }
 
-//    public Menu toEntity() {
-//        return new Menu(name, price);
-//    }
+
 }

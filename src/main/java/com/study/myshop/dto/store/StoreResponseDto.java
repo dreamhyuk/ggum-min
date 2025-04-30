@@ -2,35 +2,51 @@ package com.study.myshop.dto.store;
 
 import com.study.myshop.domain.Address;
 import com.study.myshop.domain.Store;
-import com.study.myshop.domain.member.Member;
-import com.study.myshop.dto.StoreCategoryMappingDto;
+import com.study.myshop.dto.AddressDto;
+import com.study.myshop.dto.MenuCategoryDto;
+import com.study.myshop.dto.StoreCategoryDto;
 import com.study.myshop.dto.owner.OwnerDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
 
-@Getter
+@Data
+@AllArgsConstructor
 public class StoreResponseDto {
 
     private Long storeId;
     private String name;
-    private Address storeAddress;
+    private AddressDto storeAddress;
     private OwnerDto owner;
-    private List<StoreCategoryMappingDto> mappings;
+    private List<StoreCategoryDto> storeCategories;
 
-    public StoreResponseDto(Store store) {
-        storeId = store.getId();
-        name = store.getStoreName();
-        storeAddress = store.getAddress();
-        owner = new OwnerDto(store.getOwnerProfile());
-        mappings = store.getStoreCategoryMappings().stream()
-                .map(storeCategoryMapping -> new StoreCategoryMappingDto(storeCategoryMapping))
-                .collect(toList());
+    private List<MenuCategoryDto> menuCategories;
 
+//    public StoreResponseDto (Long storeId, String name, AddressDto storeAddress,
+//                             OwnerDto owner, List<StoreCategoryDto> storeCategories) {
+//        this.storeId = storeId;
+//        this.name = name;
+//        this.storeAddress = storeAddress;
+//        this.owner = owner;
+//        this.storeCategories = storeCategories;
+//    }
+
+
+    public static StoreResponseDto from(Store store,
+                                        List<StoreCategoryDto> storeCategoryDtos,
+                                        List<MenuCategoryDto> menuCategoryDtos) {
+
+        return new StoreResponseDto(
+                store.getId(),
+                store.getStoreName(),
+                new AddressDto(store.getAddress()),
+                new OwnerDto(store.getOwnerProfile()),
+                storeCategoryDtos,
+                menuCategoryDtos
+        );
     }
-
 
 }

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StoreRepositoryCustom {
@@ -14,5 +15,11 @@ public interface StoreRepositoryCustom {
     List<Store> findByStoreName(String storeName);
 
     List<Store> findByCategoryId(Long categoryId);
+
+    Optional<Store> findStoreById(Long storeId);
+
+    Optional<Store> findWithMemberById(Long storeId);
+
+    Store findStoreWithCategories(Long storeId);
 
 }

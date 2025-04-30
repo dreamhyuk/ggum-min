@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 @Entity
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -16,7 +18,7 @@ public class OwnerProfile {
     @Column(name = "owner_profile_id")
     private Long id;
 
-    @OneToOne(mappedBy = "ownerProfile")
+    @OneToOne(mappedBy = "ownerProfile", fetch = LAZY)
     private Member member;
 
     private String businessNumber;

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ public class MenuCategory {
     private Store store;
 
     @OneToMany(mappedBy = "menuCategory")
+    @BatchSize(size = 10)
     private List<Menu> menus = new ArrayList<>();
 
     public void setStore(Store store) {

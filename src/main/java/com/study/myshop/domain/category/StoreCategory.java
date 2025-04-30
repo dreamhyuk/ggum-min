@@ -1,9 +1,13 @@
 package com.study.myshop.domain.category;
 
+import com.study.myshop.domain.StoreCategoryMapping;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -27,8 +31,8 @@ public class StoreCategory {
      * ex.   <depth 1>       (의류  -  음식  -  전자제품)
      *       <depth 2>       (상의, 하의  - 한식, 중식  -  컴퓨터, 핸드폰)
      */
-//    @OneToMany(mappedBy = "storeCategory", cascade = CascadeType.ALL)
-//    private List<StoreCategoryMapping> storeCategoryMappings = new ArrayList<>();
+    @OneToMany(mappedBy = "storeCategory", cascade = CascadeType.ALL)
+    private List<StoreCategoryMapping> storeCategoryMappings = new ArrayList<>();
 
     public StoreCategory(String name) {
         this.name = name;

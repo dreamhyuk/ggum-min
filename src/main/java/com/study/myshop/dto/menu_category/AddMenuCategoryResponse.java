@@ -1,4 +1,4 @@
-package com.study.myshop.dto;
+package com.study.myshop.dto.menu_category;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

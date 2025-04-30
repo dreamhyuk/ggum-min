@@ -40,17 +40,10 @@ public class Menu {
     @JoinColumn(name = "menu_category_id")
     private MenuCategory menuCategory;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "store_id")
-    private Store store;
+//    @ManyToOne(fetch = LAZY)
+//    @JoinColumn(name = "store_id")
+//    private Store store;
 
-
-    private Menu(String name, int price, MenuCategory menuCategory, Store store) {
-        this.name = name;
-        this.price = price;
-        this.setMenuCategory(menuCategory);
-        this.setStore(store);
-    }
 
     /* 연관관계 편의 메서드 */
     public void setMenuCategory(MenuCategory menuCategory) {
@@ -58,13 +51,18 @@ public class Menu {
         menuCategory.getMenus().add(this);
     }
 
-    public void setStore(Store store) {
-        this.store = store;
-    }
+//    public void setStore(Store store) {
+//        this.store = store;
+//    }
 
     /* 생성 메서드 */
-    public static Menu createMenu(String name, int price, MenuCategory menuCategory, Store store) {
-        return new Menu(name, price, menuCategory, store);
+    public static Menu createMenu(String name, int price, MenuCategory menuCategory) {
+        Menu menu = new Menu();
+        menu.name = name;
+        menu.price = price;
+        menu.menuCategory = menuCategory;
+
+        return menu;
     }
 
 

@@ -74,6 +74,8 @@ public class InitDb {
             em.persist(storeCategory5);
             StoreCategory storeCategory6 = StoreCategory.createCategory("분식");
             em.persist(storeCategory6);
+            StoreCategory storeCategory7 = StoreCategory.createCategory("디저트");
+            em.persist(storeCategory7);
 
             String password1 = passwordEncoder.encode("1q2w3e4r");
             Member member1 = Member.createOwner("ownerA", password1, "123-123", "1234");
@@ -83,6 +85,7 @@ public class InitDb {
             Member member2 = Member.createOwner("ownerB", password2, "1234-1234", "5678");
             em.persist(member2);
 
+            //가게 생성
             List<StoreCategory> categories1 = List.of(storeCategory1, storeCategory6);
             Store store1 = Store.create("한정식", new Address("서울", "잠실", "234"),
                     member1.getOwnerProfile(), categories1);
@@ -92,6 +95,17 @@ public class InitDb {
             Store store2 = Store.create("교촌", new Address("바르셀로나", "몰라", "바모스!"),
                     member2.getOwnerProfile(), categories2);
             em.persist(store2);
+
+            List<StoreCategory> categories3 = List.of(storeCategory4, storeCategory7);
+            Store store3 = Store.create("스타벅스", new Address("런던", "첼시", "9090"),
+                    member1.getOwnerProfile(), categories3);
+            em.persist(store3);
+
+            List<StoreCategory> categories4 = List.of(storeCategory1, storeCategory3);
+            Store store4 = Store.create("한식 치킨", new Address("서울", "강남", "4545"),
+                    member2.getOwnerProfile(), categories4);
+            em.persist(store4);
+
         }
 
         public void dbInit3() {
