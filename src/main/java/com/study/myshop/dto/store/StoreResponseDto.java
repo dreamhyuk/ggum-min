@@ -8,7 +8,6 @@ import com.study.myshop.dto.StoreCategoryDto;
 import com.study.myshop.dto.owner.OwnerDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 
 import java.util.List;
 
@@ -25,16 +24,7 @@ public class StoreResponseDto {
 
     private List<MenuCategoryDto> menuCategories;
 
-//    public StoreResponseDto (Long storeId, String name, AddressDto storeAddress,
-//                             OwnerDto owner, List<StoreCategoryDto> storeCategories) {
-//        this.storeId = storeId;
-//        this.name = name;
-//        this.storeAddress = storeAddress;
-//        this.owner = owner;
-//        this.storeCategories = storeCategories;
-//    }
-
-
+    //store + storeCategory + menuCategory 를 합치는 변환 메서드
     public static StoreResponseDto from(Store store,
                                         List<StoreCategoryDto> storeCategoryDtos,
                                         List<MenuCategoryDto> menuCategoryDtos) {

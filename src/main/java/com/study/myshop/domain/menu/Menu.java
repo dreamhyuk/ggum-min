@@ -24,8 +24,8 @@ public class Menu {
     private Long id;
 
     private String name;
-
     private int price;
+    private int quantity;
 
 //    private int stockQuantity; //(배달 어플에서) 재고 수량이 필요한가? 필요 없을 거 같다.
 //    private boolean isRecommended; //대표메뉴 여부
@@ -76,8 +76,12 @@ public class Menu {
         this.name = name;
     }
 
-    public void changPrice(int price) {
+    public void changePrice(int price) {
         this.price = price;
+    }
+
+    public void changeQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     /* 비즈니스 로직 */

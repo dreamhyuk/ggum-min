@@ -136,7 +136,6 @@ public class StoreService {
                 .collect(toList());
 
         return StoreResponseDto.from(storeWithCategories, storeCategoryDtos, menuCategoryDtos);
-
     }
 
     private static List<Long> toMenuCategoryIds(List<MenuCategoryDto> result) {
@@ -145,7 +144,6 @@ public class StoreService {
                 .collect(toList());
         return menuCategoryIds;
     }
-
 
 
 

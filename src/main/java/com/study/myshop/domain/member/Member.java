@@ -25,9 +25,9 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "member")
-    private List<Order> orders = new ArrayList<>();
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "member")
+//    private List<Order> orders = new ArrayList<>();
 
     //역할별 1:1 매핑
     @OneToOne(fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

@@ -62,7 +62,7 @@ public class MenuService {
             findMenu.changeName(request.getMenuName());
         }
         if (request.getPrice() != null) {
-            findMenu.changPrice(request.getPrice());
+            findMenu.changePrice(request.getPrice());
         }
 
     }

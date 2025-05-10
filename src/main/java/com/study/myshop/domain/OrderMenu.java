@@ -2,10 +2,7 @@ package com.study.myshop.domain;
 
 import com.study.myshop.domain.menu.Menu;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import static jakarta.persistence.FetchType.*;
 
@@ -20,6 +17,7 @@ public class OrderMenu {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "order_id")
+    @Setter
     private Order order;
 
     @ManyToOne(fetch = LAZY)
@@ -43,7 +41,6 @@ public class OrderMenu {
                 .orderPrice(orderPrice)
                 .count(count)
                 .build();
-
 //        menu.removeStock(count);
         return orderMenu;
     }

@@ -2,6 +2,7 @@ package com.study.myshop.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import static jakarta.persistence.FetchType.*;
 
@@ -17,8 +18,12 @@ public class Delivery {
     private Order order;
 
     @Embedded
+    @Setter
     private Address address;
 
     @Enumerated(EnumType.STRING)
     private DeliveryStatus status; //READY, COMP
+
+
+
 }
