@@ -106,6 +106,21 @@ public class InitDb {
                     member2.getOwnerProfile(), categories4);
             em.persist(store4);
 
+            //메뉴 카테고리
+            MenuCategory menuCategory1 = store2.addMenuCategory("오리지널");
+            MenuCategory menuCategory2 = store2.addMenuCategory("콤보");
+            MenuCategory menuCategory3 = store2.addMenuCategory("사이드");
+            //메뉴
+            Menu menu1 = Menu.createMenu("오리지널 반반", 19000, menuCategory1);
+            em.persist(menu1);
+            Menu menu2 = Menu.createMenu("교촌 오리지널", 18000, menuCategory1);
+            em.persist(menu2);
+            Menu menu3 = Menu.createMenu("허니 콤보", 18000, menuCategory2);
+            em.persist(menu3);
+            Menu menu4 = Menu.createMenu("코카콜라", 3000, menuCategory3);
+            em.persist(menu4);
+
+
         }
 
         public void dbInit3() {

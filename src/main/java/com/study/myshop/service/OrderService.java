@@ -7,7 +7,6 @@ import com.study.myshop.domain.OrderMenu;
 import com.study.myshop.domain.Store;
 import com.study.myshop.domain.member.Member;
 import com.study.myshop.domain.menu.Menu;
-import com.study.myshop.dto.OrderMenuRequest;
 import com.study.myshop.dto.order.CreateOrderRequest;
 import com.study.myshop.exception.UnauthorizedAccessException;
 import com.study.myshop.repository.MemberRepository;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -52,16 +50,15 @@ public class OrderService {
                 .map(orderMenuRequest -> {
                     Menu menu = menuRepository.findById(orderMenuRequest.getMenuId())
                             .orElseThrow(() -> new IllegalArgumentException("메뉴 없음."));
-                    return new OrderMenu(menu, menu.getPrice(), orderMenuRequest.getQuantity());
+                    return OrderMenu.createOrderMenu(menu, menu.getPrice(), orderMenuRequest.getCount());
                 })
                 .collect(toList());
 
         //배송정보 생성
-        Delivery delivery = new Delivery();
-        delivery.setAddress(request.getAddressDto().toEntity());
+        Delivery delivery = Delivery.createDelivery(request.getAddress().toEntity());
 
         //주문 생성
-        Order order = Order.createOrder(member.getCustomerProfile(), delivery, orderMenus);
+        Order order = Order.createOrder(member.getCustomerProfile(), store, delivery, orderMenus);
 
         //주문 저장
         orderRepository.save(order);
@@ -77,7 +74,7 @@ public class OrderService {
         Order order = orderRepository.findByIdAndStoreId(orderId, storeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없음."));
 
-        if (!order.getCustomerProfile().getId().equals(userId)) {
+        if (!order.getCustomerProfile().getMember().getId().equals(userId)) {
             throw new UnauthorizedAccessException("본인의 주문만 취소할 수 있음.");
         }
 
@@ -88,8 +85,21 @@ public class OrderService {
     /**
      * 검색
      */
-    public List<Order> findOrders(OrderSearch orderSearch) {
-        return orderQueryRepository.findAll(orderSearch);
+    //Customer가 자신의 주문 조회
+    public List<Order> findOrdersByCustomer(Long userId, OrderSearch orderSearch) {
+        return orderQueryRepository.findOrdersByCustomer(userId, orderSearch);
+    }
+
+    //Owner가 본인 가게의 주문 조회
+    public List<Order> findOrdersByStore(Long userId, Long storeId, OrderSearch orderSearch) {
+        Store store = storeRepository.findStoreById(storeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 가게 찾을 수 없음."));
+
+        if (!store.getOwnerProfile().getMember().getId().equals(userId)) {
+            throw new UnauthorizedAccessException("본인 가게의 주문만 조회할 수 있음.");
+        }
+
+        return orderQueryRepository.findOrdersByStore(storeId, orderSearch);
     }
 
 

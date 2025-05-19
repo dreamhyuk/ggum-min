@@ -28,7 +28,7 @@ public class OrderMenu {
     private int count; //주문 수량
 
     @Builder
-    public OrderMenu(Menu menu, int orderPrice, int count) {
+    protected OrderMenu(Menu menu, int orderPrice, int count) {
         this.menu = menu;
         this.orderPrice = orderPrice;
         this.count = count;
@@ -41,7 +41,6 @@ public class OrderMenu {
                 .orderPrice(orderPrice)
                 .count(count)
                 .build();
-//        menu.removeStock(count);
         return orderMenu;
     }
 

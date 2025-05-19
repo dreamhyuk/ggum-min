@@ -3,9 +3,11 @@ package com.study.myshop.dto;
 import com.study.myshop.domain.Address;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class AddressDto {
 
     private String city;

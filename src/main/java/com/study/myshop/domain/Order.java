@@ -51,9 +51,10 @@ public class Order extends BaseTimeEntity {
         orderMenu.setOrder(this);
     }
 
-    public static Order createOrder(CustomerProfile customerProfile, Delivery delivery, List<OrderMenu> orderMenus) {
+    public static Order createOrder(CustomerProfile customerProfile, Store store, Delivery delivery, List<OrderMenu> orderMenus) {
         Order order = new Order();
         order.customerProfile = customerProfile;
+        order.store = store;
         order.delivery = delivery;
         for (OrderMenu orderMenu: orderMenus) {
             order.addMenus(orderMenu);

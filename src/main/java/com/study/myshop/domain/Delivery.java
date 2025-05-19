@@ -1,13 +1,16 @@
 package com.study.myshop.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import static jakarta.persistence.FetchType.*;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Delivery {
 
     @Id @GeneratedValue
@@ -18,12 +21,20 @@ public class Delivery {
     private Order order;
 
     @Embedded
-    @Setter
     private Address address;
 
     @Enumerated(EnumType.STRING)
-    private DeliveryStatus status; //READY, COMP
+    private DeliveryStatus status; //READY, PICKED_UP, DELIVERED
 
+    public static Delivery createDelivery(Address address) {
+        Delivery delivery = new Delivery();
+        delivery.address = address;
+        delivery.status = DeliveryStatus.READY;
+        return delivery;
+    }
 
+    public void changeStatus(DeliveryStatus status) {
+        this.status = status;
+    }
 
 }

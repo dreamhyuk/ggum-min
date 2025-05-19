@@ -49,11 +49,19 @@ public class Store {
     @BatchSize(size = 10)
     private List<MenuCategory> menuCategories = new ArrayList<>();
 
+
     /* 연관관계 편의 메서드 */
-    public void addMenuCategory(MenuCategory menuCategory) {
+//    public void addMenuCategory(MenuCategory menuCategory) {
+//        menuCategories.add(menuCategory);
+//        menuCategory.setStore(this);
+//    }
+    public MenuCategory addMenuCategory(String name) {
+        MenuCategory menuCategory = MenuCategory.createCategory(name, this);
         menuCategories.add(menuCategory);
-        menuCategory.setStore(this);
+
+        return menuCategory;
     }
+
 
     public void addStoreCategoryMapping(StoreCategoryMapping storeCategoryMapping) {
         if (this.storeCategoryMappings.size() >= 2) {

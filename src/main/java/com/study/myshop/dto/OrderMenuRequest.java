@@ -8,5 +8,6 @@ import lombok.Getter;
 public class OrderMenuRequest {
 
     private Long menuId;
-    private int quantity;
+    private int count;
+
 }

@@ -1,12 +1,11 @@
 package com.study.myshop.repository.order;
 
 import com.study.myshop.domain.OrderStatus;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Data
 public class OrderSearch {
 
-    private String customerName;
     private OrderStatus orderStatus;
 
 }

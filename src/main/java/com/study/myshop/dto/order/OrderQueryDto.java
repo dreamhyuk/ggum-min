@@ -1,14 +1,14 @@
 package com.study.myshop.dto.order;
 
+import com.study.myshop.domain.DeliveryStatus;
 import com.study.myshop.domain.Order;
-import com.study.myshop.domain.OrderMenu;
+import com.study.myshop.domain.OrderStatus;
 import com.study.myshop.dto.AddressDto;
 import com.study.myshop.dto.OrderMenuDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -22,6 +22,10 @@ public class OrderQueryDto {
     private AddressDto address;
 
     private List<OrderMenuDto> orderMenus;
+
+    private OrderStatus orderStatus;
+    private DeliveryStatus deliveryStatus;
+
     private int totalPrice;
 
     public OrderQueryDto(Order order) {
@@ -32,6 +36,8 @@ public class OrderQueryDto {
         this.orderMenus = order.getOrderMenus().stream()
                 .map(orderMenu -> new OrderMenuDto(orderMenu))
                 .collect(toList());
+        this.orderStatus = order.getOrderStatus();
+        this.deliveryStatus = order.getDelivery().getStatus();
         this.totalPrice = order.getTotalPrice();
     }
 
