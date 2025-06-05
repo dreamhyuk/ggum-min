@@ -1,10 +1,32 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Home!</title>
+<head th:replace="fragments/header :: header">
+    <title>ggum-min!</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 </head>
+
 <body>
-    <p th:text="'안녕하세요. ' + ${data}">안녕하세요. 손님</p>
+    <div class="container">
+
+        <div th:replace="fragments/bodyHeader :: bodyHeader" />
+
+        <div class="jumbotron">
+            <h1>GGUM MIN</h1>
+            <p class="lead">회원 가입</p>
+            <p>
+                <a class="btn btn-lg btn-secondary" href="/new/customers">고객 회원 가입</a>
+                <a class="btn btn-lg btn-secondary" href="/new/owners">사장님 회원 가입</a>
+                <a class="btn btn-lg btn-secondary" href="/new/riders">라이더 회원 가입</a>
+            </p>
+            <p class="lead">로그인</p>
+            <p>
+                <a class="btn btn-lg btn-dark" href="/members/login">로그인</a>
+            </p>
+        </div>
+
+        <div th:replace="fragments/footer :: footer" />
+
+    </div> <!-- /container -->
+
 </body>
 </html>

@@ -66,16 +66,18 @@ public class InitDb {
             em.persist(storeCategory1);
             StoreCategory storeCategory2 = StoreCategory.createCategory("중식");
             em.persist(storeCategory2);
-            StoreCategory storeCategory3 = StoreCategory.createCategory("치킨");
+            StoreCategory storeCategory3 = StoreCategory.createCategory("일식");
             em.persist(storeCategory3);
-            StoreCategory storeCategory4 = StoreCategory.createCategory("카페");
+            StoreCategory storeCategory4 = StoreCategory.createCategory("치킨");
             em.persist(storeCategory4);
-            StoreCategory storeCategory5 = StoreCategory.createCategory("패스트 푸드");
+            StoreCategory storeCategory5 = StoreCategory.createCategory("피자");
             em.persist(storeCategory5);
-            StoreCategory storeCategory6 = StoreCategory.createCategory("분식");
+            StoreCategory storeCategory6 = StoreCategory.createCategory("패스트푸드");
             em.persist(storeCategory6);
-            StoreCategory storeCategory7 = StoreCategory.createCategory("디저트");
+            StoreCategory storeCategory7 = StoreCategory.createCategory("분식");
             em.persist(storeCategory7);
+            StoreCategory storeCategory8 = StoreCategory.createCategory("카페");
+            em.persist(storeCategory8);
 
             String password1 = passwordEncoder.encode("1q2w3e4r");
             Member member1 = Member.createOwner("ownerA", password1, "123-123", "1234");
@@ -91,17 +93,17 @@ public class InitDb {
                     member1.getOwnerProfile(), categories1);
             em.persist(store1);
 
-            List<StoreCategory> categories2 = List.of(storeCategory3, storeCategory5);
+            List<StoreCategory> categories2 = List.of(storeCategory4, storeCategory6);
             Store store2 = Store.create("교촌", new Address("바르셀로나", "몰라", "바모스!"),
                     member2.getOwnerProfile(), categories2);
             em.persist(store2);
 
-            List<StoreCategory> categories3 = List.of(storeCategory4, storeCategory7);
+            List<StoreCategory> categories3 = List.of(storeCategory8, storeCategory6);
             Store store3 = Store.create("스타벅스", new Address("런던", "첼시", "9090"),
                     member1.getOwnerProfile(), categories3);
             em.persist(store3);
 
-            List<StoreCategory> categories4 = List.of(storeCategory1, storeCategory3);
+            List<StoreCategory> categories4 = List.of(storeCategory1, storeCategory4);
             Store store4 = Store.create("한식 치킨", new Address("서울", "강남", "4545"),
                     member2.getOwnerProfile(), categories4);
             em.persist(store4);

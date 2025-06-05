@@ -1,0 +1,126 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header">
+    <title>ggum-min!</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+<style>
+        #categories {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4개씩 균등하게 */
+            gap: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .category {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .category img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+        }
+</style>
+
+<div class="container">
+    <nav class="navbar fixed-top bg-light">
+        <div class="container d-flex justify-content-center">
+            <form id="searchForm" class="d-flex" role="search">
+                <input id="searchInput" name="storeName" class="form-control me-2" type="search" placeholder="찾고 싶은 메뉴를 검색" aria-label="Search"/>
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+
+<!--    <div th:replace="fragments/bodyHeader :: bodyHeader" />-->
+
+    <div class="jumbotron">
+        <h1>Customer Home</h1>
+        <p class="lead">카테고리</p>
+        <div id="categories">
+            <a class="category" th:href="@{/api/stores/search/category(category-name='한식')}">
+                <img src="/images/korean.png" alt="한식">
+                <p>한식</p>
+            </a>
+            <a class="category" data-category="chinese" th:href="@{/api/stores/search/category(category-name='중식')}">
+                <img src="/images/chinese.png" alt="중식">
+                <p>중식</p>
+            </a>
+            <a class="category" data-category="japanese" th:href="@{/api/stores/search/category(category-name='일식')}">
+                <img src="/images/japanese.png" alt="일식">
+                <p>일식</p>
+            </a>
+            <a class="category" th:href="@{/api/stores/search/category(category-name='치킨')}">
+                <img src="/images/chicken.png" alt="치킨">
+                <p>치킨</p>
+            </a>
+            <a class="category" th:href="@{/api/stores/search/category(category-name='피자')}">
+                <img src="/images/pizza.png" alt="피자">
+                <p>피자</p>
+            </a>
+            <a class="category" th:href="@{/api/stores/search/category(category-name='패스트푸드')}">
+                <img src="/images/fast-food.png" alt="패스트 푸드">
+                <p>패스트 푸드</p>
+            </a>
+            <a class="category" th:href="@{/api/stores/search/category(category-name='분식')}">
+                <img src="/images/snack.png" alt="분식">
+                <p>분식</p>
+            </a>
+            <a class="category" th:href="@{/api/stores/search/category(category-name='카페')}">
+                <img src="/images/cafe.png" alt="카페.디저트">
+                <p>카페.디저트</p>
+            </a>
+        </div>
+
+    </div>
+
+    <div th:replace="fragments/footer :: footer" />
+
+</div> <!-- /container -->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+      $('.category').click(function() {
+        const category = $(this).data('category');
+        $.ajax({
+          url: `/api/stores/search/category/category-name?=${categoryName}`,
+          method: 'GET',
+          success: function(data) {
+            $('#items').empty();
+            data.forEach(item => {
+              $('#items').append(`
+                <div class="item">
+                  <h3>${item.name}</h3>
+                  <p>${item.description}</p>
+                </div>
+              `);
+            });
+          }
+        });
+      });
+    });
+
+    document.getElementById('searchForm').addEventListener('submit', async function(event) {
+        event.preventDefault(); // 브라우저 기본 동작 막기
+        const keyword = document.getElementById('searchInput').value;
+        if (!keyword) return;
+
+        const response = await fetch(`/api/stores/search/name?storeName=${encodeURIComponent(keyword)}`);
+        if (response.ok) {
+            const result = await response.json();
+            console.log(result); // 콘솔에서 확인 가능
+            window.location.href = `/api/stores/search/name?storeName=${encodeURIComponent(keyword)}`;
+        } else {
+            alert('검색 실패');
+        }
+    });
+</script>
+
+</body>
+</html>

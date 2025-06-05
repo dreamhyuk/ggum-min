@@ -88,7 +88,7 @@ public class StoreApiController {
     }
 
     //Query String 방식. 추가적인 필터 조건이 붙는다면 이 방법이 유리하다. (평점 높은 순, 주문 많은 순 등등..)
-    //사용자 입장에선 쿼리 파라미터로 categoryId보다 categoryName을 사용하는 게 더 직관적이다.
+    //쿼리 파라미터로 categoryId보다 categoryName을 사용하는 게 더 직관적이다.
     @GetMapping("/search/category")
     public ResponseEntity<ApiResponse<List<StoreSummaryDto>>> searchStoresByCategory(@RequestParam("category-name") String categoryName) {
 

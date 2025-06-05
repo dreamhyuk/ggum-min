@@ -94,6 +94,7 @@ public class OrderApiController {
 
         List<Order> orders = orderService.findOrdersByStore(userDetails.getId(), storeId, orderSearch);
         System.out.println("find orders size: " + orders.size());
+        System.out.println("orderStatus = " + orderSearch.getOrderStatus());
 
         List<OrderQueryDto> result = orders.stream()
                 .map(o -> new OrderQueryDto(o))

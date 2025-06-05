@@ -65,6 +65,7 @@ public class CustomUserDetails implements UserDetails, Serializable {
 
     @Override
     public String getPassword() {
-        return null; // JWT 기반 인증에서는 비밀번호를 사용하지 않음
+        return password; // JWT 기반 인증에서는 비밀번호를 사용하지 않음
     }
+
 }

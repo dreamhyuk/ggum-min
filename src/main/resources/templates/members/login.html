@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<style>
+ .fieldError {
+ border-color: #bd2130;
+ }
+</style>
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <form id="login-form" role="form">
+        <div class="form-group">
+            <label th:for="name">이름</label>
+            <input type="text" name="username" class="form-control" placeholder="이름을 입력하세요">
+        </div>
+        <div class="form-group">
+            <label th:for="password">비밀번호</label>
+            <input type="password" name="password" class="form-control" placeholder="비밀번호를 입력하세요">
+        </div>
+
+        <button type="submit" class="btn btn-primary">로그인</button>
+    </form>
+    <br/>
+    <div th:replace="fragments/footer :: footer" />
+</div> <!-- /container -->
+
+<script>
+    document.getElementById('login-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const payload = {
+            username: document.querySelector('input[name="username"]').value,
+            password: document.querySelector('input[name="password"]').value,
+        };
+
+        fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            credentials: 'include'
+        })
+        .then(async res => {
+            if (!res.ok) throw new Error('로그인 실패');
+            const data = await res.json();
+            alert('로그인 성공');
+            window.location.href = data.redirectUrl;
+        })
+        .catch(err => alert(err.message));
+    });
+</script>
+
+
+<!--<script>
+    document.getElementById('login-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const payload = {
+            username: document.querySelector('input[name="username"]').value,
+            password: document.querySelector('input[name="password"]').value,
+        };
+
+        fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            credentials: 'include' // 쿠키 전송 허용, 필요 없으면 제거 가능
+        })
+        .then(async res => {
+            if (!res.ok) {
+                throw new Error('로그인 실패');
+            }
+
+            const accessToken = res.headers.get('Authorization'); // "Bearer xxx"
+            const data = await res.json(); // LoginResponseDto → { redirectUrl, refreshToken }
+
+            if (accessToken) {
+                localStorage.setItem('accessToken', accessToken); // 저장
+            } else {
+                throw new Error('토큰이 없습니다.');
+            }
+
+            alert('로그인 성공');
+            window.location.href = data.redirectUrl; // 예: /customer/home
+        })
+        .catch(err => {
+            alert(err.message);
+        });
+    });
+</script>-->
+
+</body>
+</html>

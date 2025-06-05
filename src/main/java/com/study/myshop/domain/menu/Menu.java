@@ -33,16 +33,13 @@ public class Menu {
     @OneToMany(mappedBy = "menu")
     private List<OrderMenu> orderMenus = new ArrayList<>();
 
-    //메뉴가 굳이 여러 카테고리에 포함될 필요가 있나? (중간 테이블이 없어도 될 듯)
+    //한 메뉴가 여러 메뉴 카테고리에 포함되진 않는다.(중간 테이블이 없어도 될 듯)
 //    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
 //    private List<MenuCategoryMapping> menuCategoryMappings = new ArrayList<>();
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "menu_category_id")
     private MenuCategory menuCategory;
 
-//    @ManyToOne(fetch = LAZY)
-//    @JoinColumn(name = "store_id")
-//    private Store store;
 
 
     /* 연관관계 편의 메서드 */
@@ -51,9 +48,6 @@ public class Menu {
         menuCategory.getMenus().add(this);
     }
 
-//    public void setStore(Store store) {
-//        this.store = store;
-//    }
 
     /* 생성 메서드 */
     public static Menu createMenu(String name, int price, MenuCategory menuCategory) {

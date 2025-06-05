@@ -8,5 +8,6 @@ import lombok.Data;
 public class LoginResponseDto {
 
     private String redirectUrl;
-    private String refreshToken;
+    private String accessToken;
+//    private String refreshToken;
 }
