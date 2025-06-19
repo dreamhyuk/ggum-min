@@ -3,8 +3,10 @@ package com.study.myshop.api;
 import com.study.myshop.authentication.CustomUserDetails;
 import com.study.myshop.common.ApiResponse;
 import com.study.myshop.domain.category.MenuCategory;
+import com.study.myshop.dto.MenuCategoryDto;
 import com.study.myshop.dto.menu_category.AddMenuCategoryRequest;
 import com.study.myshop.dto.menu_category.AddMenuCategoryResponse;
+import com.study.myshop.dto.menu_category.GetMenuCategoryDto;
 import com.study.myshop.dto.menu_category.UpdateMenuCategoryResponse;
 import com.study.myshop.service.MenuCategoryService;
 import jakarta.validation.Valid;
@@ -13,6 +15,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -71,4 +78,18 @@ public class MenuCategoryApiController {
                 .body(ApiResponse.success("메뉴 카테고리 삭제"));
     }
 
+
+    @GetMapping("/stores/{storeId}/menu-categories")
+    public ResponseEntity<ApiResponse<List<GetMenuCategoryDto>>> getMenuCategory(
+            @PathVariable("storeId") Long storeId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        List<MenuCategory> menuCategories = menuCategoryService.findAll(storeId);
+
+        List<GetMenuCategoryDto> result = menuCategories.stream()
+                .map(m -> new GetMenuCategoryDto(m))
+                .collect(toList());
+
+        return ResponseEntity.ok(ApiResponse.success("메뉴 카테고리 조회", result));
+    }
 }

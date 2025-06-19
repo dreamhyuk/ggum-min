@@ -4,8 +4,10 @@ import com.study.myshop.authentication.CustomUserDetails;
 import com.study.myshop.common.ApiResponse;
 import com.study.myshop.domain.Store;
 import com.study.myshop.domain.StoreCategoryMapping;
+import com.study.myshop.domain.member.Member;
 import com.study.myshop.dto.AddressDto;
 import com.study.myshop.dto.store.*;
+import com.study.myshop.service.MemberService;
 import com.study.myshop.service.StoreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import static java.util.stream.Collectors.toList;
 public class StoreApiController {
 
     private final StoreService storeService;
+    private final MemberService memberService;
 
     /**
      * 등록
@@ -110,6 +113,22 @@ public class StoreApiController {
         StoreResponseDto storeDetail = storeService.getStoreDetail(storeId);
 
         return ResponseEntity.ok(ApiResponse.success("가게 상세 조회", storeDetail));
+    }
+
+
+    //내 가게 조회
+    @GetMapping()
+    public ResponseEntity<ApiResponse<List<StoreSummaryDto>>> getMyStores(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Member owner = memberService.findByUsername(userDetails.getUsername());
+        Long ownerId = owner.getOwnerProfile().getId();
+
+        List<Store> stores = storeService.findStoresByOwner(ownerId);
+
+        List<StoreSummaryDto> result = stores.stream()
+                .map(s -> new StoreSummaryDto(s))
+                .collect(toList());
+
+        return ResponseEntity.ok(ApiResponse.success("내 가게 조회", result));
     }
 
 }

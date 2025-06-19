@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class CategoryController {
 
-    @GetMapping("search/category")
+    @GetMapping("/search/category")
     public String showCategoryPage() {
         return "search/category";
     }

@@ -13,4 +13,6 @@ import java.util.Optional;
 @Repository
 public interface StoreRepository extends JpaRepository<Store, Long>, StoreRepositoryCustom {
 
+    List<Store> findByOwnerProfileId(Long ownerId);
+
 }

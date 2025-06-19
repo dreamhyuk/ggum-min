@@ -1,8 +1,6 @@
 package com.study.myshop;
 
-import com.study.myshop.domain.Address;
-import com.study.myshop.domain.Store;
-import com.study.myshop.domain.StoreCategoryMapping;
+import com.study.myshop.domain.*;
 import com.study.myshop.domain.category.MenuCategory;
 import com.study.myshop.domain.category.StoreCategory;
 import com.study.myshop.domain.member.Member;
@@ -94,7 +92,7 @@ public class InitDb {
             em.persist(store1);
 
             List<StoreCategory> categories2 = List.of(storeCategory4, storeCategory6);
-            Store store2 = Store.create("교촌", new Address("바르셀로나", "몰라", "바모스!"),
+            Store store2 = Store.create("교촌", new Address("바르셀로나", "거리", "바모스!"),
                     member2.getOwnerProfile(), categories2);
             em.persist(store2);
 
@@ -117,10 +115,32 @@ public class InitDb {
             em.persist(menu1);
             Menu menu2 = Menu.createMenu("교촌 오리지널", 18000, menuCategory1);
             em.persist(menu2);
-            Menu menu3 = Menu.createMenu("허니 콤보", 18000, menuCategory2);
+            Menu menu3 = Menu.createMenu("허니 콤보", 21000, menuCategory2);
             em.persist(menu3);
             Menu menu4 = Menu.createMenu("코카콜라", 3000, menuCategory3);
             em.persist(menu4);
+
+            //주문
+            String password = passwordEncoder.encode("123");
+            Member member = Member.createCustomer("myCustomer", password, "000-000",
+                    new Address("서울", "풍납", "00000"));
+            em.persist(member);
+
+            Delivery delivery = Delivery.createDelivery(member.getCustomerProfile().getAddress());
+            em.persist(delivery);
+
+            OrderMenu orderMenu1 = OrderMenu.createOrderMenu(menu1, 19000, 1);
+            OrderMenu orderMenu2 = OrderMenu.createOrderMenu(menu3, 21000, 2);
+            em.persist(orderMenu1);
+            em.persist(orderMenu2);
+
+            List<OrderMenu> orderMenus = new ArrayList<>();
+            orderMenus.add(orderMenu1);
+            orderMenus.add(orderMenu2);
+
+            Order order = Order.createOrder(member.getCustomerProfile(), store2, delivery, orderMenus);
+            em.persist(order);
+
 
 
         }
@@ -133,37 +153,6 @@ public class InitDb {
 
 /*
         public void dbInit4() {
-            String password1 = passwordEncoder.encode("123");
-            Member member1 = Member.createOwner("ownerC", password1, "123-123", "1234");
-            OwnerProfile ownerProfile1 = member1.getOwnerProfile();
-            em.persist(member1);
-
-            String password2 = passwordEncoder.encode("1234");
-            Member member2 = Member.createOwner("ownerD", password2, "456-456", "4567");
-            OwnerProfile ownerProfile2 = member2.getOwnerProfile();
-            em.persist(member2);
-
-            StoreCategory storeCategory1 = StoreCategory.createCategory("한식");
-            em.persist(storeCategory1);
-            StoreCategory storeCategory2 = StoreCategory.createCategory("중식");
-            em.persist(storeCategory2);
-            StoreCategory storeCategory3 = StoreCategory.createCategory("치킨");
-            em.persist(storeCategory3);
-            StoreCategory storeCategory4 = StoreCategory.createCategory("카페");
-            em.persist(storeCategory4);
-
-            StoreCategoryMapping mapping1 = StoreCategoryMapping.createMapping(storeCategory1);
-            StoreCategoryMapping mapping2 = StoreCategoryMapping.createMapping(storeCategory2);
-            StoreCategoryMapping mapping3 = StoreCategoryMapping.createMapping(storeCategory3);
-            StoreCategoryMapping mapping4 = StoreCategoryMapping.createMapping(storeCategory4);
-
-            Address address1 = new Address("서울", "명동", "123");
-            Address address2 = new Address("바르셀로나", "거리", "456");
-
-            Store store1 = Store.createStore("storeA", address1, ownerProfile1, mapping1, mapping2);
-            em.persist(store1);
-            Store store2 = Store.createStore("storeB", address2, ownerProfile2, mapping3, mapping4);
-            em.persist(store2);
         }
 
         public void dbInit5() {

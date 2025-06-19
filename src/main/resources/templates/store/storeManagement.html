@@ -1,0 +1,41 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header">
+    <title>ggum-min!</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+<div class="container">
+
+    <div th:replace="fragments/bodyHeader :: bodyHeader" />
+
+    <div class="jumbotron">
+        <h1>가게 관리</h1>
+        <p class="lead">가게 정보</p>
+        <p>
+            <a class="btn btn-lg btn-secondary" th:href="@{/owner/stores/{storeId}/view(storeId=${storeId})}">가게 정보 보기</a>
+            <a class="btn btn-lg btn-secondary" th:href="@{/owner/stores/{storeId}/info/update(storeId=${storeId})}">기본 정보 수정</a>
+        </p>
+        <p class="lead">메뉴 카테고리 관리</p>
+        <p>
+            <a class="btn btn-lg btn-secondary" th:href="@{/owner/stores/{storeId}/menu-categories/new(storeId=${storeId})}">카테고리 추가</a>
+        </p>
+        <p class="lead">메뉴 관리</p>
+        <p>
+            <a class="btn btn-lg btn-secondary" th:href="@{/owner/stores/{storeId}/menus/new(storeId=${storeId})}">메뉴 추가</a>
+            <a class="btn btn-lg btn-secondary" th:href="@{/owner/stores/{storeId}/menus/update(storeId=${storeId})}">메뉴 수정</a>
+        </p>
+        <p class="lead">주문 관리</p>
+        <p>
+            <a class="btn btn-lg btn-dark" th:href="@{/owner/stores/{storeId}/orders(storeId=${storeId})}">주문 보기</a>
+        </p>
+
+    </div>
+
+    <div th:replace="fragments/footer :: footer" />
+
+</div> <!-- /container -->
+
+</body>
+</html>

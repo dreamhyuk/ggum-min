@@ -29,7 +29,7 @@ public class Delivery {
     public static Delivery createDelivery(Address address) {
         Delivery delivery = new Delivery();
         delivery.address = address;
-        delivery.status = DeliveryStatus.READY;
+        delivery.status = DeliveryStatus.WAITING;
         return delivery;
     }
 

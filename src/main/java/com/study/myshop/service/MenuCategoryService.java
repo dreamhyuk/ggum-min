@@ -9,6 +9,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Service
 @Transactional(readOnly = true)
@@ -71,6 +73,10 @@ public class MenuCategoryService {
         return menuCategory.getId();
     }
 
+
+    public List<MenuCategory> findAll(Long storeId) {
+        return menuCategoryRepository.findAllByStoreId(storeId);
+    }
 
     public MenuCategory findOne(Long storeId, Long menuCategoryId) {
         return menuCategoryRepository.findByIdAndStoreId(menuCategoryId, storeId)

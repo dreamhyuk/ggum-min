@@ -1,5 +1,5 @@
 package com.study.myshop.domain;
 
 public enum DeliveryStatus {
-    READY, PICKED_UP, DELIVERED
+    WAITING, DELIVERED //배차 대기, 배달 완료
 }

@@ -12,6 +12,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -91,6 +93,10 @@ public class MenuService {
     public Menu findOne(Long menuCategoryId, Long menuId) {
         return menuRepository.findByIdAndMenuCategoryId(menuId, menuCategoryId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 매장을 찾을 수 없음."));
+    }
+
+    public List<Menu> findMenus(Long menuCategoryId) {
+        return menuRepository.findAllByMenuCategoryId(menuCategoryId);
     }
 
 }

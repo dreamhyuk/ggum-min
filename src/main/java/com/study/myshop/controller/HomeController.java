@@ -36,12 +36,12 @@ public class HomeController {
 
     @GetMapping("/owner/home")
     public String ownerHome() {
-        return "customerHome";
+        return "ownerHome";
     }
 
     @GetMapping("/rider/home")
     public String riderHome() {
-        return "customerHome";
+        return "riderHome";
     }
 
 }

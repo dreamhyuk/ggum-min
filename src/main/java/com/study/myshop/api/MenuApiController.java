@@ -5,7 +5,9 @@ import com.study.myshop.common.ApiResponse;
 import com.study.myshop.domain.menu.Menu;
 import com.study.myshop.dto.menu.AddMenuRequest;
 import com.study.myshop.dto.menu.AddMenuResponse;
+import com.study.myshop.dto.menu.GetMenuDto;
 import com.study.myshop.dto.menu.UpdateMenuResponse;
+import com.study.myshop.dto.menu_category.GetMenuCategoryDto;
 import com.study.myshop.service.MenuService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -68,5 +73,19 @@ public class MenuApiController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("메뉴 삭제 성공"));
+    }
+
+    @GetMapping("/stores/{storeId}/menu-categories/{menuCategoryId}/menus")
+    public ResponseEntity<ApiResponse<List<GetMenuDto>>> getMenu(
+            @PathVariable("storeId") Long storeId,
+            @PathVariable("menuCategoryId") Long menuCategoryId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        List<Menu> menus = menuService.findMenus(menuCategoryId);
+        List<GetMenuDto> result = menus.stream()
+                .map(m -> new GetMenuDto(m))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(ApiResponse.success("카테고리 메뉴 조회", result));
     }
 }

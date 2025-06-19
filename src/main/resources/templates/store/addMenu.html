@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>메뉴 관리</title>
+    <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .tab {
+      padding: 8px 16px;
+      background: #eee;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .tab.active {
+      background: #007bff;
+      color: white;
+    }
+    .menu-list {
+      margin-bottom: 20px;
+    }
+    .menu-item {
+      padding: 12px 16px;
+      background: white;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      font-size: 16px;
+      font-weight: 500;
+    }
+    .form-group {
+      margin-bottom: 12px;
+    }
+    label {
+      display: block;
+      margin-bottom: 4px;
+    }
+    input {
+      width: 300px;
+      padding: 8px;
+      font-size: 14px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    #menuForm {
+      display: none;
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+<h1>메뉴 관리</h1>
+
+<!-- 카테고리 탭 영역 -->
+<div class="tabs" id="categoryTabs"></div>
+
+<!-- 메뉴 목록 영역 -->
+<div class="menu-list" id="menuList"></div>
+
+<!-- 메뉴 추가 폼 -->
+<div id="menuForm">
+    <h3>메뉴 추가</h3>
+    <div class="form-group">
+        <label for="menuName">메뉴 이름</label>
+        <input type="text" id="menuName">
+    </div>
+    <div class="form-group">
+        <label for="menuPrice">메뉴 가격</label>
+        <input type="number" id="menuPrice" min="0">
+    </div>
+    <button id="submitBtn">메뉴 추가</button>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const storeId = window.location.pathname.split("/")[3]; // /owner/stores/{storeId}/menus 구조 가정
+    let selectedCategoryId = null;
+
+    const tabsEl = document.getElementById("categoryTabs");
+    const menuListEl = document.getElementById("menuList");
+    const menuFormEl = document.getElementById("menuForm");
+
+    // Load categories
+    fetch(`/api/stores/${storeId}/menu-categories`)
+      .then(res => res.json())
+      .then(json => renderCategoryTabs(json.data))
+      .catch(err => {
+        alert("카테고리 로딩 실패");
+        console.error(err);
+      });
+
+    function renderCategoryTabs(categories) {
+      const tabs = document.getElementById("categoryTabs");
+      tabs.innerHTML = "";
+
+      categories.forEach(cat => {
+        const tab = document.createElement("div");
+        tab.textContent = cat.menuCategoryName;
+        tab.dataset.id = cat.menuCategoryId;
+        tab.classList.add("tab");
+
+        // 이 부분에서 함수에 id를 넘겨줘야 함
+        tab.addEventListener("click", () => selectCategory(cat.menuCategoryId));
+
+        tabs.appendChild(tab);
+      });
+    }
+
+    function selectCategory(menuCategoryId) {
+        selectedCategoryId = menuCategoryId;        // ← 선택값 기억
+        console.log("선택된 카테고리 ID:", menuCategoryId);
+
+        /* 1) 폼을 화면에 노출 */
+        menuFormEl.style.display = "block";
+
+        /* 2) 탭 하이라이트(선택한 탭에 active 클래스 주기) */
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        const activeTab = document.querySelector(`.tab[data-id="${menuCategoryId}"]`);
+        if (activeTab) activeTab.classList.add("active");
+
+        fetch(`/api/stores/${storeId}/menu-categories/${menuCategoryId}/menus`)
+            .then(res => res.ok ? res.json() : Promise.reject("메뉴 조회 실패"))
+            .then(json => renderMenuList(json.data))
+            .catch(err => {
+                alert("메뉴 목록을 불러오는 데 실패했습니다.");
+                console.error(err);
+            });
+    }
+
+    function renderMenuList(menus) {
+      menuListEl.innerHTML = "";
+
+      if (menus.length === 0) {
+        menuListEl.textContent = "메뉴가 없습니다.";
+        return;
+      }
+
+      menus.forEach(menu => {
+        const item = document.createElement("div");
+        item.className = "menu-item";
+
+        item.innerHTML = `
+          <div class="menu-name">${menu.menuName}</div>
+          <div class="menu-price">${menu.price.toLocaleString()}원</div>
+        `;
+
+        menuListEl.appendChild(item);
+      });
+    }
+
+    // 메뉴 추가
+    document.getElementById("submitBtn").addEventListener("click", () => {
+      const name = document.getElementById("menuName").value.trim();
+      const price = parseInt(document.getElementById("menuPrice").value, 10);
+
+      if (!selectedCategoryId || !name || isNaN(price)) {
+        alert("모든 필드를 입력해주세요.");
+        return;
+      }
+
+      fetch(`/api/stores/${storeId}/menu-categories/${selectedCategoryId}/menus`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ menuName: name, price })
+      })
+        .then(res => res.ok ? res.json() : Promise.reject("추가 실패"))
+        .then(() => {
+          alert("메뉴가 추가되었습니다.");
+          document.getElementById("menuName").value = "";
+          document.getElementById("menuPrice").value = "";
+          // 새로고침 없이 다시 메뉴 목록 불러오기
+          selectCategory(selectedCategoryId, document.querySelector(`.tab[data-id="${selectedCategoryId}"]`));
+        })
+        .catch(err => {
+          alert("메뉴 추가 실패");
+          console.error(err);
+        });
+    });
+  });
+</script>
+
+</body>
+</html>

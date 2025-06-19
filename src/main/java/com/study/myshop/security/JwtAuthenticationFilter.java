@@ -1,6 +1,7 @@
 package com.study.myshop.security;
 
 import com.study.myshop.authentication.UserDetailsServiceImpl;
+import com.study.myshop.exception.MemberNotFoundException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -29,17 +30,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = jwtTokenProvider.resolveToken(request);
 
-
-
         if (token != null && jwtTokenProvider.validationToken(token)) {
-            Long userId = jwtTokenProvider.getUserIdFromToken(token);
-            UserDetails userDetails = userDetailsService.loadUserById(userId);
 
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            try {
+                Long userId = jwtTokenProvider.getUserIdFromToken(token);
+                UserDetails userDetails = userDetailsService.loadUserById(userId);
 
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            } catch (MemberNotFoundException e) {
+                // 예외 발생 시 SecurityContext 초기화하고 인증 실패 처리 가능
+                SecurityContextHolder.clearContext();
+            }
         }
 
         filterChain.doFilter(request, response);

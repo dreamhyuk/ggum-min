@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>가게 상세</title>
+    <style>
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      background-color: #f9f9f9;
+      padding: 20px;
+      color: #333;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    h3 {
+      font-size: 20px;
+      margin: 24px 0 12px;
+    }
+    section {
+      margin-bottom: 20px;
+    }
+    .tag {
+      display: inline-block;
+      padding: 6px 14px;
+      margin: 4px;
+      background-color: #ff6f0f;
+      color: white;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .menu-category-card {
+      background-color: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+    .menu-category-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      color: #333;
+    }
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .menu-item:last-child {
+      border-bottom: none;
+    }
+    .menu-name {
+      font-weight: 500;
+    }
+    .menu-price {
+      color: #777;
+    }
+    .store-info {
+      font-size: 15px;
+    }
+    .store-address {
+      margin-bottom: 8px;
+    }
+    .owner-section {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+<h1 id="storeName">가게명</h1>
+
+<section>
+    <div class="store-address" id="address"></div>
+</section>
+
+<section>
+    <h3>카테고리</h3>
+    <div id="categories"></div>
+</section>
+
+<section>
+    <h3>메뉴 카테고리</h3>
+    <div id="menuCategories"></div>
+</section>
+
+<section class="owner-section">
+    <h3>사장님 정보</h3>
+    <div class="store-info">
+        <div id="ownerName"></div>
+        <div>사업자번호: <span id="businessNumber"></span></div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const storeId = window.location.pathname.split("/").pop();
+      fetch(`/api/stores/${storeId}`)
+        .then(res => res.ok ? res.json() : Promise.reject("API 오류"))
+        .then(json => renderStore(json.data))
+        .catch(err => {
+          alert("가게 정보를 불러오는 데 실패했습니다.");
+          console.error(err);
+        });
+    });
+
+    function renderStore(store) {
+      document.getElementById("storeName").textContent = store.name;
+      document.getElementById("address").textContent =
+        `${store.storeAddress.city} ${store.storeAddress.street} ${store.storeAddress.zipcode}`;
+
+      renderCategories(store.storeCategories);
+      renderMenuCategories(store.menuCategories);
+      renderOwner(store.owner);
+    }
+
+    function renderCategories(categories) {
+      const container = document.getElementById("categories");
+      container.innerHTML = "";
+      categories.forEach(cat => {
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = cat.name;
+        container.appendChild(tag);
+      });
+    }
+
+    function renderMenuCategories(menuCategories) {
+      const container = document.getElementById("menuCategories");
+      container.innerHTML = "";
+
+      menuCategories.forEach(cat => {
+        const card = document.createElement("div");
+        card.className = "menu-category-card";
+
+        const title = document.createElement("div");
+        title.className = "menu-category-title";
+        title.textContent = cat.name;
+        card.appendChild(title);
+
+        if (cat.menus.length === 0) {
+          const empty = document.createElement("p");
+          empty.textContent = "메뉴 없음";
+          card.appendChild(empty);
+        } else {
+          cat.menus.forEach(menu => {
+            const item = document.createElement("div");
+            item.className = "menu-item";
+
+            const name = document.createElement("div");
+            name.className = "menu-name";
+            name.textContent = menu.menuName;
+
+            const price = document.createElement("div");
+            price.className = "menu-price";
+            price.textContent = `${menu.price.toLocaleString()}원`;
+
+            item.appendChild(name);
+            item.appendChild(price);
+            card.appendChild(item);
+          });
+        }
+
+        container.appendChild(card);
+      });
+    }
+
+    function renderOwner(owner) {
+      document.getElementById("ownerName").textContent = owner.name;
+      document.getElementById("businessNumber").textContent = owner.businessNumber;
+    }
+  </script>
+</body>
+</html>

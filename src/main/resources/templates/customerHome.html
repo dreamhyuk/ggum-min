@@ -43,35 +43,35 @@
         <h1>Customer Home</h1>
         <p class="lead">카테고리</p>
         <div id="categories">
-            <a class="category" th:href="@{/api/stores/search/category(category-name='한식')}">
+            <a class="category" th:href="@{/search/category(category-name='한식')}">
                 <img src="/images/korean.png" alt="한식">
                 <p>한식</p>
             </a>
-            <a class="category" data-category="chinese" th:href="@{/api/stores/search/category(category-name='중식')}">
+            <a class="category" data-category="chinese" th:href="@{/search/category(category-name='중식')}">
                 <img src="/images/chinese.png" alt="중식">
                 <p>중식</p>
             </a>
-            <a class="category" data-category="japanese" th:href="@{/api/stores/search/category(category-name='일식')}">
+            <a class="category" data-category="japanese" th:href="@{/search/category(category-name='일식')}">
                 <img src="/images/japanese.png" alt="일식">
                 <p>일식</p>
             </a>
-            <a class="category" th:href="@{/api/stores/search/category(category-name='치킨')}">
+            <a class="category" th:href="@{/search/category(category-name='치킨')}">
                 <img src="/images/chicken.png" alt="치킨">
                 <p>치킨</p>
             </a>
-            <a class="category" th:href="@{/api/stores/search/category(category-name='피자')}">
+            <a class="category" th:href="@{/search/category(category-name='피자')}">
                 <img src="/images/pizza.png" alt="피자">
                 <p>피자</p>
             </a>
-            <a class="category" th:href="@{/api/stores/search/category(category-name='패스트푸드')}">
+            <a class="category" th:href="@{/search/category(category-name='패스트푸드')}">
                 <img src="/images/fast-food.png" alt="패스트 푸드">
                 <p>패스트 푸드</p>
             </a>
-            <a class="category" th:href="@{/api/stores/search/category(category-name='분식')}">
+            <a class="category" th:href="@{/search/category(category-name='분식')}">
                 <img src="/images/snack.png" alt="분식">
                 <p>분식</p>
             </a>
-            <a class="category" th:href="@{/api/stores/search/category(category-name='카페')}">
+            <a class="category" th:href="@{/search/category(category-name='카페')}">
                 <img src="/images/cafe.png" alt="카페.디저트">
                 <p>카페.디저트</p>
             </a>
@@ -89,7 +89,7 @@
       $('.category').click(function() {
         const category = $(this).data('category');
         $.ajax({
-          url: `/api/stores/search/category/category-name?=${categoryName}`,
+          url: `/api/stores/search/category?category-name=${encodeURIComponent(categoryName)}`,
           method: 'GET',
           success: function(data) {
             $('#items').empty();

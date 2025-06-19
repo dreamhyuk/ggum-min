@@ -100,7 +100,9 @@ public class StoreService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 매장을 찾을 수 없음."));
 
-        store.updateInfo(request);
+        List<StoreCategoryMapping> mappings = createMappings(request.getCategoryIds());
+
+        store.updateInfo(request, mappings);
     }
 
 
@@ -146,5 +148,8 @@ public class StoreService {
     }
 
 
+    public List<Store> findStoresByOwner(Long ownerId) {
+        return storeRepository.findByOwnerProfileId(ownerId);
+    }
 
 }

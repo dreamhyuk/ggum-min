@@ -13,4 +13,6 @@ public interface MenuCategoryRepository extends JpaRepository<MenuCategory, Long
 
     Optional<MenuCategory> findByIdAndStoreId(Long menuCategoryId, Long storeId);
 
+    List<MenuCategory> findAllByStoreId(Long storeId);
+
 }

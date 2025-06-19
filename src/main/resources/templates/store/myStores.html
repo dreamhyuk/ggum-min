@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>카테고리별 매장</title>
+    <title>내 가게 조회</title>
     <style>
     body {
       font-family: Arial, sans-serif;
@@ -52,32 +52,27 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', async function () {
-    const params = new URLSearchParams(window.location.search);
-    const category = params.get('category-name');
+      const response = await fetch(`/api/stores`);
+      if (response.ok) {
+        const json = await response.json(); // 또는 json.data
+        const stores = json.data
 
-    if (!category) return;
+        const container = document.getElementById('items');
+        container.innerHTML = '';
 
-    const response = await fetch(`/api/stores/search/category?category-name=${encodeURIComponent(category)}`);
-    if (response.ok) {
-      const json = await response.json();
-      const stores = json.data;
-
-      const container = document.getElementById('items');
-      container.innerHTML = ''; // 초기화
-
-      stores.forEach(store => {
-        const card = document.createElement('a');
-        card.classList.add('store-card');
-        card.href = `/stores/${store.storeId}`; // 매장 상세 페이지로 이동
-        card.innerHTML = `
-          <img src="/images/store-placeholder.png" alt="${store.storeName}">
-          <h3>${store.storeName}</h3>
-        `;
-        container.appendChild(card);
-      });
-    } else {
-      alert('데이터를 불러오지 못했습니다.');
-    }
+        stores.forEach(store => {
+          const card = document.createElement('a');
+          card.classList.add('store-card');
+          card.href = `/owner/stores/${store.storeId}/management`;
+          card.innerHTML = `
+            <img src="/images/store-placeholder.png" alt="${store.storeName}">
+            <h3>${store.storeName}</h3>
+          `;
+          container.appendChild(card);
+        });
+      } else {
+        alert('데이터를 불러오지 못했습니다.');
+      }
   });
 </script>
 

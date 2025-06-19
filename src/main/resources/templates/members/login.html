@@ -51,43 +51,5 @@
 </script>
 
 
-<!--<script>
-    document.getElementById('login-form').addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        const payload = {
-            username: document.querySelector('input[name="username"]').value,
-            password: document.querySelector('input[name="password"]').value,
-        };
-
-        fetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-            credentials: 'include' // 쿠키 전송 허용, 필요 없으면 제거 가능
-        })
-        .then(async res => {
-            if (!res.ok) {
-                throw new Error('로그인 실패');
-            }
-
-            const accessToken = res.headers.get('Authorization'); // "Bearer xxx"
-            const data = await res.json(); // LoginResponseDto → { redirectUrl, refreshToken }
-
-            if (accessToken) {
-                localStorage.setItem('accessToken', accessToken); // 저장
-            } else {
-                throw new Error('토큰이 없습니다.');
-            }
-
-            alert('로그인 성공');
-            window.location.href = data.redirectUrl; // 예: /customer/home
-        })
-        .catch(err => {
-            alert(err.message);
-        });
-    });
-</script>-->
-
 </body>
 </html>

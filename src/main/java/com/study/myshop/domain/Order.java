@@ -18,7 +18,7 @@ import static jakarta.persistence.FetchType.*;
 @Table(name = "orders")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Order extends BaseTimeEntity {
+public class Order {
 
     @Id @GeneratedValue
     @Column(name = "order_id")
@@ -46,6 +46,8 @@ public class Order extends BaseTimeEntity {
     @Setter(AccessLevel.PRIVATE)
     private OrderStatus orderStatus; // [ORDER, CANCEL]
 
+    private int totalPrice;
+
     public void addMenus(OrderMenu orderMenu) {
         this.orderMenus.add(orderMenu);
         orderMenu.setOrder(this);
@@ -59,11 +61,36 @@ public class Order extends BaseTimeEntity {
         for (OrderMenu orderMenu: orderMenus) {
             order.addMenus(orderMenu);
         }
-        order.setOrderStatus(OrderStatus.ORDER);
+        order.setOrderStatus(OrderStatus.WAITING);
 
         return order;
     }
 
+    /**
+     * 주문
+     */
+    public void accept() {
+        if (this.orderStatus != OrderStatus.WAITING) {
+            throw new IllegalStateException("이미 처리된 주문입니다.");
+        }
+        this.orderStatus = OrderStatus.ACCEPTED;
+    }
+    public void deliveryReady() {
+        if (this.orderStatus != OrderStatus.ACCEPTED) {
+            throw new IllegalStateException("이미 준비된 주문입니다.");
+        }
+        this.orderStatus = OrderStatus.DELIVERY_READY;
+    }
+    public void complete() {
+        if (this.orderStatus != OrderStatus.DELIVERY_READY) {
+            throw new IllegalStateException("이미 완료된 주문입니다");
+        }
+        this.orderStatus = OrderStatus.COMPLETED;
+    }
+
+    /**
+     * 배달
+     */
     public void cancel() {
         if (delivery.getStatus() == DeliveryStatus.DELIVERED) {
             throw new IllegalStateException("이미 배송 완료된 상품은 취소가 불가능합니다.");

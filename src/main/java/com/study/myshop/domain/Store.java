@@ -38,7 +38,7 @@ public class Store {
     @JoinColumn(name = "owner_profile_id")
     private OwnerProfile ownerProfile;
 
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     @BatchSize(size = 10)
     private List<StoreCategoryMapping> storeCategoryMappings = new ArrayList<>();
 
@@ -71,19 +71,6 @@ public class Store {
         storeCategoryMapping.setStore(this);
     }
 
-//    public void addMenu(Menu menu) {
-//        menus.add(menu);
-//        menu.setStore(this);
-//    }
-//
-//    public void removeMenu(Menu menu) {
-//        if (!menus.contains(menu)) {
-//            throw new IllegalArgumentException("해당 메뉴가 존재하지 않습니다.");
-//        }
-//
-//        menus.remove(menu);
-//        menu.setStore(null); // 양방향 연관관계 정리
-//    }
 
     /* 생성 메서드 */
     public static Store createStore(String storeName, Address address, OwnerProfile ownerProfile, StoreCategoryMapping... storeCategoryMappings) {
@@ -137,9 +124,15 @@ public class Store {
     /**
      * 기본 정보 수정
      */
-    public void updateInfo(UpdateStoreInfoRequest request) {
+    public void updateInfo(UpdateStoreInfoRequest request, List<StoreCategoryMapping> mappings) {
         this.storeName = request.getStoreName();
         this.address = new Address(request.getCity(), request.getStreet(), request.getZipcode());
+
+        this.storeCategoryMappings.clear(); // 리스트에서 제거
+
+        for(StoreCategoryMapping mapping: mappings) {
+            this.addStoreCategoryMapping(mapping);
+        }
     }
 
     /**
