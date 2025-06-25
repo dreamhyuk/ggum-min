@@ -45,7 +45,8 @@ public class StoreController {
     }
 
     @GetMapping("/owner/stores/{storeId}/menus/new")
-    public String addMenus() {
+    public String addMenus(@PathVariable("storeId") Long storeId, Model model) {
+        model.addAttribute("storeId", storeId);
         return "store/addMenu";
     }
 

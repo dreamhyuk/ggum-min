@@ -77,6 +77,11 @@
             </a>
         </div>
 
+        <p class="lead">주문 내역</p>
+        <p>
+            <a class="btn btn-lg btn-dark" th:href="@{/customer/orders}">내 주문 보기</a>
+        </p>
+
     </div>
 
     <div th:replace="fragments/footer :: footer" />
@@ -115,7 +120,7 @@
         if (response.ok) {
             const result = await response.json();
             console.log(result); // 콘솔에서 확인 가능
-            window.location.href = `/api/stores/search/name?storeName=${encodeURIComponent(keyword)}`;
+            window.location.href = `/search/name?storeName=${encodeURIComponent(keyword)}`;
         } else {
             alert('검색 실패');
         }

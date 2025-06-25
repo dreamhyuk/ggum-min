@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>장바구니</title>
+    <style>
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    #cart-container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    #customer-name {
+      font-weight: bold;
+      color: #555;
+    }
+
+    #cart-items {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    #cart-items li {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 16px;
+    }
+
+    .item-name {
+      font-weight: 500;
+    }
+
+    .item-count {
+      color: #999;
+      font-size: 14px;
+    }
+
+    #cart-summary {
+      margin-top: 20px;
+      text-align: right;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    #order-button {
+      margin-top: 30px;
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      background-color: #00c4c4;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    #order-button:hover {
+      background-color: #00a3a3;
+    }
+
+    .empty-message {
+      text-align: center;
+      color: #888;
+      font-size: 16px;
+      margin: 40px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div id="cart-container">
+    <h2>장바구니</h2>
+
+    <ul id="cart-items"></ul>
+
+    <div id="cart-summary">
+        총 금액: <span id="total-price">0</span>원
+    </div>
+
+    <button id="order-button">최종 주문하기</button>
+</div>
+
+<script th:inline="javascript">
+  const storeId = [[${storeId}]];
+
+  async function fetchCart() {
+    try {
+      const response = await fetch('/api/carts/me');
+
+      if (response.status === 204) {
+        document.getElementById('cart-container').innerHTML =
+          '<p class="empty-message">장바구니가 비어 있습니다.</p>';
+        return;
+      }
+
+      const result = await response.json();
+      const cart = result.data;
+
+      const list = document.getElementById('cart-items');
+      list.innerHTML = "";
+
+      cart.cartItems.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span>${item.menuName}</span>
+          <span>${item.price.toLocaleString()}원 x ${item.count}</span>
+        `;
+        list.appendChild(li);
+      });
+
+      document.getElementById('total-price').textContent = cart.totalPrice.toLocaleString();
+
+    } catch (e) {
+      console.error('장바구니 조회 실패:', e);
+      alert('장바구니 정보를 불러오지 못했습니다.');
+    }
+  }
+
+  async function submitOrder() {
+    try {
+      const response = await fetch(`/api/stores/${storeId}/order-cart`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+        // body 없음: 서버에서 로그인한 유저의 주소로 처리
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert(`주문이 완료되었습니다! 주문 ID: ${result.data.orderId}`);
+        window.location.href = "/customer/orders";
+      } else {
+        const error = await response.json();
+        alert('주문 실패: ' + error.message);
+      }
+
+    } catch (e) {
+      console.error('주문 처리 오류:', e);
+      alert('주문 요청 중 오류가 발생했습니다.');
+    }
+  }
+
+  document.getElementById('order-button').addEventListener('click', submitOrder);
+
+  fetchCart();
+</script>
+
+</body>
+</html>

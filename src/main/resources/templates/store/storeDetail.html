@@ -71,6 +71,20 @@
       padding-top: 20px;
       border-top: 1px solid #ddd;
     }
+    .add-button {
+      background-color: #00c4c4; /* 배민 하늘색 */
+      border: none;
+      color: white;
+      padding: 6px 14px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    .add-button:hover {
+      background-color: #00a3a3;
+    }
   </style>
 </head>
 <body>
@@ -97,6 +111,13 @@
         <div>사업자번호: <span id="businessNumber"></span></div>
     </div>
 </section>
+<div id="cart-bar" style="display:none; position:fixed; bottom:0; left:0; right:0; padding:14px 20px;
+    background-color:#00c4c4; color:white; font-weight:bold; font-size:16px; display:flex;
+    justify-content:space-between; align-items:center; z-index:1000;">
+    <span id="cart-summary">장바구니에 0개 | 총 0원</span>
+    <button onclick="location.href='/customer/cart'" style="background:white; color:#00c4c4; padding:6px 16px;
+        border-radius:16px; font-weight:bold; border:none; cursor:pointer;">주문하기</button>
+</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -108,6 +129,9 @@
           alert("가게 정보를 불러오는 데 실패했습니다.");
           console.error(err);
         });
+
+        //여기서 장바구니 상태도 함께 요청
+        fetchCartSummary();
     });
 
     function renderStore(store) {
@@ -161,8 +185,20 @@
             price.className = "menu-price";
             price.textContent = `${menu.price.toLocaleString()}원`;
 
+            // 👇 담기 버튼
+            const button = document.createElement("button");
+            button.textContent = "담기";
+            button.className = "add-button";
+            button.onclick = () => addToCart(menu.menuId);  // 메뉴 ID 넘겨서 장바구니에 추가
+
+            const rightBox = document.createElement("div");
+            rightBox.style.display = "flex";
+            rightBox.style.alignItems = "center";
+            rightBox.appendChild(price);
+            rightBox.appendChild(button);
+
             item.appendChild(name);
-            item.appendChild(price);
+            item.appendChild(rightBox);
             card.appendChild(item);
           });
         }
@@ -174,6 +210,59 @@
     function renderOwner(owner) {
       document.getElementById("ownerName").textContent = owner.name;
       document.getElementById("businessNumber").textContent = owner.businessNumber;
+    }
+
+    function addToCart(menuId) {
+      fetch("/api/carts/me", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ menuId, count: 1 })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("장바구니 담기 실패");
+        return res.json();
+      })
+      .then(() => {
+        alert("장바구니에 담았습니다.");
+        fetchCartSummary();                // ✅ 바 즉시 업데이트
+      })
+      .catch(err => {
+        alert("장바구니 담기에 실패했습니다.");
+        console.error(err);
+      });
+    }
+
+    //장바구니
+    function fetchCartSummary() {
+      fetch("/api/carts/me")
+        .then(res => {
+          if (res.status === 204 || res.status === 404) {
+            hideCartBar();                 // ✅ 바 숨김
+            return null;
+          }
+          if (!res.ok) throw new Error("장바구니 불러오기 실패");
+          return res.json();
+        })
+        .then(json => {
+          if (!json) return;
+          const cart = json.data;
+          const totalItems = cart.cartItems.length;          // ← DTO 필드명 확인
+          const totalPrice = cart.totalPrice;            // ← DTO에 총액 필드 있으면 더 간단
+          updateCartBar(totalItems, totalPrice);
+        })
+        .catch(console.error);
+    }
+
+    function updateCartBar(count, total) {
+      if (count === 0) { hideCartBar(); return; }
+
+      document.getElementById("cart-summary").textContent =
+          `장바구니에 ${count}개 | 총 ${total.toLocaleString()}원`;
+      document.getElementById("cart-bar").style.display = "flex";
+    }
+
+    function hideCartBar() {
+      document.getElementById("cart-bar").style.display = "none";
     }
   </script>
 </body>

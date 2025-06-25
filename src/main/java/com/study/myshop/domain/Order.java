@@ -67,7 +67,7 @@ public class Order {
     }
 
     /**
-     * 주문
+     * 주문 상태
      */
     public void accept() {
         if (this.orderStatus != OrderStatus.WAITING) {
@@ -89,7 +89,7 @@ public class Order {
     }
 
     /**
-     * 배달
+     * 배달 상태
      */
     public void cancel() {
         if (delivery.getStatus() == DeliveryStatus.DELIVERED) {

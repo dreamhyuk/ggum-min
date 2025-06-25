@@ -1,6 +1,8 @@
 package com.study.myshop.domain.member.profile;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.study.myshop.domain.Address;
+import com.study.myshop.domain.Cart;
 import com.study.myshop.domain.Order;
 import com.study.myshop.domain.member.Member;
 import jakarta.persistence.*;
@@ -24,6 +26,9 @@ public class CustomerProfile {
 
     @OneToMany(mappedBy = "customerProfile")
     private List<Order> orders = new ArrayList<>();
+
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Cart cart;
 
     @Embedded
     private Address address;

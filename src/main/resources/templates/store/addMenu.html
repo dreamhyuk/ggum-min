@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thyeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <title>메뉴 관리</title>
@@ -64,11 +64,42 @@
       border-radius: 8px;
       box-shadow: 0 0 6px rgba(0,0,0,0.1);
     }
+
+    /* 상단 홈 버튼 영역 */
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 1rem 0 0.2rem;
+    }
+
+    .home-button {
+      background-color: #03c75a;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.2s ease;
+      text-decoration: none;
+    }
+
+    .home-button:hover {
+       background-color: #029e47;
+    }
+
   </style>
 </head>
 <body>
 
 <h1>메뉴 관리</h1>
+<!-- 🏠나가기 -->
+<div class="top-bar">
+    <a th:href="@{/owner/stores/{storeId}/management(storeId=${storeId})}" class="home-button">🏠 나가기</a>
+</div>
 
 <!-- 카테고리 탭 영역 -->
 <div class="tabs" id="categoryTabs"></div>

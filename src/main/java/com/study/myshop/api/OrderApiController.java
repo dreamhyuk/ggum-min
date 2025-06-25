@@ -3,6 +3,7 @@ package com.study.myshop.api;
 import com.study.myshop.authentication.CustomUserDetails;
 import com.study.myshop.common.ApiResponse;
 import com.study.myshop.domain.Order;
+import com.study.myshop.dto.cart.CreateOrderFromCartRequest;
 import com.study.myshop.dto.order.CreateOrderRequest;
 import com.study.myshop.dto.order.CreateOrderResponse;
 import com.study.myshop.dto.order.OrderQueryDto;
@@ -39,6 +40,32 @@ public class OrderApiController {
                 .body(ApiResponse.success(201, "주문 생성.", new CreateOrderResponse(orderId)));
     }
 
+    /* 장바구니를 통한 등록 */
+//    @PostMapping("/stores/{storeId}/order-cart")
+//    public ResponseEntity<ApiResponse<CreateOrderResponse>> createOrderFromCart(
+//            @PathVariable("storeId") Long storeId,
+//            @RequestBody @Valid CreateOrderFromCartRequest request,
+//            @AuthenticationPrincipal CustomUserDetails userDetails) {
+//
+//        Long orderId = orderService.orderFromCart(request, userDetails);
+//
+//        return ResponseEntity.status(HttpStatus.CREATED)
+//                .body(ApiResponse.success(201, "주문 생성.", new CreateOrderResponse(orderId)));
+//    }
+
+    //주소를 현재 유저 주소로 고정
+    @PostMapping("/stores/{storeId}/order-cart")
+    public ResponseEntity<ApiResponse<CreateOrderResponse>> createOrderFromCart(
+            @PathVariable("storeId") Long storeId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long orderId = orderService.orderFromCart(storeId, userDetails);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(201, "주문 생성", new CreateOrderResponse(orderId)));
+    }
+
+
 
     /* 수정은 없고, 주문 취소 후 재주문하는 방식. */
 
@@ -70,7 +97,7 @@ public class OrderApiController {
      * 주문 조회는 Customer가 자기 자신의 주문을 조회하는 경우와
      * Owner가 본인 가게의 주문을 조회하는 경우로 나눈다.
      */
-    @GetMapping("/orders/mine")
+    @GetMapping("/orders/me")
     public ResponseEntity<ApiResponse<List<OrderQueryDto>>> getOrdersByCustomer(
             @ModelAttribute("orderSearch") OrderSearch orderSearch,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -85,6 +112,7 @@ public class OrderApiController {
 
         return ResponseEntity.ok(ApiResponse.success("고객 주문 조회", result));
     }
+
 
     @GetMapping("/stores/{storeId}/orders")
     public ResponseEntity<ApiResponse<List<OrderQueryDto>>> getOrdersByStore(
