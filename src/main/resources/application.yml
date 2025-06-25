@@ -7,7 +7,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         #        show_sql: true
@@ -24,3 +24,7 @@ logging:
 
 jwt:
   secret: bXktc2VjcmV0LWtleS1teS1zZWNyZXQta2V5LW15LXNlY3JldC1rZXk=
+
+server:
+  port: 8081
+  address: 0.0.0.0
