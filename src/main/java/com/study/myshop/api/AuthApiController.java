@@ -89,7 +89,7 @@ public class AuthApiController {
         Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
         accessTokenCookie.setHttpOnly(true);
         accessTokenCookie.setPath("/"); // 모든 경로에 대해 쿠키 전송
-        accessTokenCookie.setMaxAge(60 * 60); // 예: 1시간
+        accessTokenCookie.setMaxAge(60 * 60); //1시간
 
         // Refresh Token
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);

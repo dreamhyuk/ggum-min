@@ -59,16 +59,9 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/members/login", "/new/**", "/css/**", "/js/**",
                                 "/favicon.ico").permitAll()
-//                        .requestMatchers("/customer/**").hasRole("CUSTOMER")
-//                        .requestMatchers("/owner/**").hasRole("STORE_OWNER")
-//                        .requestMatchers("/rider/**").hasRole("RIDER")
                         .anyRequest().authenticated()
                 )
-//                .formLogin(form -> form
-//                        .loginPage("/members/login")
-//                        .permitAll()
-//                )
-//                .logout(logout -> logout.permitAll());
+
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
