@@ -17,18 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class MemberApiController {
 
     private final MemberService memberService;
-    private final AuthService authService;
-
-
-    /* 수정 */
-
-    /* 삭제 */
-
-    /* 조회 */
-//    @GetMapping("")
-//    public ResponseEntity<MemberDto> getMember() {
-//        memberService.findMembers();
-//    }
 
     //주소 조회
     @GetMapping("/api/members/me/address")

@@ -1,19 +1,29 @@
 spring:
   datasource:
-#    url: jdbc:h2:tcp://localhost/~/myshop
-    url: jdbc:h2:mem:myshop;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:tcp://localhost/~/myshop
+#    url: jdbc:h2:mem:myshop;DB_CLOSE_DELAY=-1
     username: sa
     password:
     driver-class-name: org.h2.Driver
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         #        show_sql: true
         format_sql: true
 #        default_batch_fetch_size: 100
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true  # DB에 flyway_schema_history가 없을 경우 자동으로 시작점 생성
+    locations: classpath:db/migration
+    baseline-version: 1
+
+  h2:
+    console:
+      enabled: true
 
 logging:
   level:
