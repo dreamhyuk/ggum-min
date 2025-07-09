@@ -1,14 +1,14 @@
 spring:
   datasource:
-    url: jdbc:h2:tcp://localhost/~/myshop
-#    url: jdbc:h2:mem:myshop;DB_CLOSE_DELAY=-1
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-
+#    url: jdbc:h2:tcp://localhost/~/myshop
+    url: jdbc:mariadb://localhost:3306/myshop
+    username: root
+    password: 123456
+#    driver-class-name: org.h2.Driver
+    driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     properties:
       hibernate:
         #        show_sql: true
@@ -16,19 +16,24 @@ spring:
 #        default_batch_fetch_size: 100
 
   flyway:
+    url: jdbc:mysql://localhost:3306/myshop
+    user: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
     enabled: true
     baseline-on-migrate: true  # DB에 flyway_schema_history가 없을 경우 자동으로 시작점 생성
     locations: classpath:db/migration
     baseline-version: 1
 
-  h2:
-    console:
-      enabled: true
+#  h2:
+#    console:
+#      enabled: true
 
 logging:
   level:
     org.hibernate.SQL: debug
     org.springframework.security: DEBUG
+    org.flywaydb: DEBUG
 #    org.hibernate.SQL: info
 #    org.hibernate.type: trace #스프링 부트 2.x, hibernate5
 #    org.hibernate.orm.jdbc.bind: trace #스프링 부트 3.x, hibernate6
