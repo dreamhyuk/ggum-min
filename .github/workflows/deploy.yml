@@ -1,0 +1,58 @@
+name:  CI/CD to EC2 with Docker
+
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/myshop:latest .
+
+      - name: Push Docker image to Docker Hub
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/myshop:latest
+
+      - name: SSH(원격 접속)로 EC2에 접속하기
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          APPLICATION_PROD_YML: ${{ secrets.APPLICATION_PROD_YML }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          envs: APPLICATION_PROD_YML
+          script_stop: true
+          script: |
+            mkdir -p /home/ubuntu/app-config
+            rm -rf /home/ubuntu/app-config/application-prod.yml
+            echo "$APPLICATION_PROD_YML" > /home/ubuntu/app-config/application-prod.yml
+            
+            docker pull ${{ secrets.DOCKER_USERNAME }}/myshop:latest
+            docker stop myshop || true
+            docker rm myshop || true
+
+            docker run -d -p 8081:8081 \
+              -v /home/ubuntu/app-config/application-prod.yml:/config/application.yml \
+              -e SPRING_PROFILES_ACTIVE=prod \
+              -e spring.config.additional-location=file:/config/ \
+              --name myshop \
+              ${{ secrets.DOCKER_USERNAME }}/myshop:latest
