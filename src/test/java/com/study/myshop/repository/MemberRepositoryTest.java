@@ -1,27 +1,21 @@
 package com.study.myshop.repository;
 
-import com.study.myshop.domain.Address;
 import com.study.myshop.domain.member.Member;
 import com.study.myshop.dto.customer.CustomerRequestDto;
 import com.study.myshop.service.AuthService;
-import com.study.myshop.service.MemberService;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class MemberRepositoryTest {
 
-    @Autowired MemberService memberService;
     @Autowired MemberRepository memberRepository;
     @Autowired AuthService authService;
 
