@@ -63,6 +63,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: myshop-jar
+          path: build/libs
+
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
