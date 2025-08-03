@@ -13,16 +13,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
 
-    @InjectMocks MemberService memberService;
     @InjectMocks AuthService authService;
     @Mock
     MemberRepository memberRepository;
+    @Mock
+    PasswordEncoder passwordEncoder;
 
     @Test
     public void 고객_회원가입_테스트() throws Exception {
