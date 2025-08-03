@@ -42,8 +42,13 @@ jobs:
         run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > src/main/resources/application.yml
 
       - name: Build with Test
-        run: ./gradlew clean build -x test
+        run: ./gradlew clean build
 
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: myshop-jar
+          path: build/libs/myshop-0.0.1-SNAPSHOT.jar
 
   Deploy:
     needs: build-and-test
