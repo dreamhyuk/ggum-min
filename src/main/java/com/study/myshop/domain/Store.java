@@ -72,11 +72,13 @@ public class Store {
     }
 
 
-    /* 생성 메서드 */
+    /** 생성 메서드 */
+    /*  */
     public static Store createStore(String storeName, Address address, OwnerProfile ownerProfile, StoreCategoryMapping... storeCategoryMappings) {
         return new Store(storeName, address, ownerProfile, storeCategoryMappings);
     }
 
+    /* List로 받기 */
     public static Store createStore(String storeName, Address address, OwnerProfile ownerProfile, List<StoreCategoryMapping> mappings) {
         return new Store(storeName, address, ownerProfile, mappings);
     }
