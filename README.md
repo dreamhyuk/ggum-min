@@ -16,5 +16,5 @@ Spring Boot 기반으로 회원 관리, 주문, 배달 기능을 제공합니다
 ## 아키텍처
 
 <!-- ![아키텍처 구조](../../이미지/ggummin_deploy.png) -->
-<img src="../../이미지/ggummin_deploy.png" width=400>
+<img src="assets/images/ggummin_deploy.png" width=400>
 
