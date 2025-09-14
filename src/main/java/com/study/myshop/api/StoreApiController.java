@@ -80,27 +80,29 @@ public class StoreApiController {
      */
     //Path Variable 방식 (간단한 조회에 맞음)
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<ApiResponse<List<StoreSummaryDto>>> getStoresByCategory(@PathVariable("categoryId") Long categoryId) {
+    public ResponseEntity<ApiResponse<List<StoreSummaryDto>>> getStoresByCategory(
+            @PathVariable("categoryId") Long categoryId) {
 
         List<Store> stores = storeService.findByCategory(categoryId);
         List<StoreSummaryDto> result = stores.stream()
                 .map(s -> new StoreSummaryDto(s))
                 .collect(toList());
 
-        return ResponseEntity.ok(ApiResponse.success("카테고리로 PathVariable 검색", result));
+        return ResponseEntity.ok(ApiResponse.success("PathVariable 로 카테고리 검색", result));
     }
 
     //Query String 방식. 추가적인 필터 조건이 붙는다면 이 방법이 유리하다. (평점 높은 순, 주문 많은 순 등등..)
-    //쿼리 파라미터로 categoryId보다 categoryName을 사용하는 게 더 직관적이다.
+    //쿼리 파라미터로 categoryId 보다 categoryName 을 사용하는 게 더 직관적이다.
     @GetMapping("/search/category")
-    public ResponseEntity<ApiResponse<List<StoreSummaryDto>>> searchStoresByCategory(@RequestParam("category-name") String categoryName) {
+    public ResponseEntity<ApiResponse<List<StoreSummaryDto>>> searchStoresByCategory(
+            @RequestParam("category-name") String categoryName) {
 
         List<Store> stores = storeService.findByCategoryName(categoryName);
         List<StoreSummaryDto> result = stores.stream()
                 .map(s -> new StoreSummaryDto(s))
                 .collect(toList());
 
-        return ResponseEntity.ok(ApiResponse.success("카테고리 RequestParam 검색", result));
+        return ResponseEntity.ok(ApiResponse.success("RequestParam 로 카테고리 검색", result));
     }
 
 
@@ -118,7 +120,9 @@ public class StoreApiController {
 
     //내 가게 조회
     @GetMapping()
-    public ResponseEntity<ApiResponse<List<StoreSummaryDto>>> getMyStores(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<ApiResponse<List<StoreSummaryDto>>> getMyStores(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
         Member owner = memberService.findByUsername(userDetails.getUsername());
         Long ownerId = owner.getOwnerProfile().getId();
 

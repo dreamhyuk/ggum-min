@@ -128,7 +128,8 @@ public class Store {
      */
     public void updateInfo(UpdateStoreInfoRequest request, List<StoreCategoryMapping> mappings) {
         this.storeName = request.getStoreName();
-        this.address = new Address(request.getCity(), request.getStreet(), request.getZipcode());
+//        this.address = new Address(request.getCity(), request.getStreet(), request.getZipcode());
+        this.address = request.getAddressDto().toEntity();
 
         this.storeCategoryMappings.clear(); // 리스트에서 제거
 

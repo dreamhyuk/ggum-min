@@ -78,9 +78,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const payload = {
             storeName: document.querySelector('input[name="storeName"]').value,
-            city: document.querySelector('input[name="city"]').value,
-            street: document.querySelector('input[name="street"]').value,
-            zipcode: document.querySelector('input[name="zipcode"]').value,
+            addressDto: {
+                city: document.querySelector('input[name="city"]').value,
+                street: document.querySelector('input[name="street"]').value,
+                zipcode: document.querySelector('input[name="zipcode"]').value
+            },
             categoryIds: categoryIds
         };
 

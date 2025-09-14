@@ -1,5 +1,6 @@
 package com.study.myshop.dto.store;
 
+import com.study.myshop.dto.AddressDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,10 +14,9 @@ public class UpdateStoreInfoRequest {
 
     private String storeName;
 
-    private String city;
-    private String street;
-    private String zipcode;
+    private AddressDto addressDto;
 
     private List<Long> categoryIds;
+
 
 }

@@ -33,6 +33,7 @@ public class CustomUserDetails implements UserDetails, Serializable {
         this.authorities = List.of(new SimpleGrantedAuthority(member.getRole().name()));
     }
 
+
     @Override
     public String getUsername() {
         return username;
