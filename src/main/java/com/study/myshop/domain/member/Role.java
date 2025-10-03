@@ -13,6 +13,7 @@ public enum Role {
         this.redirectUrl = redirectUrl;
     }
 
+
     public String getRedirectUrlByRole() {
         return redirectUrl;
     }

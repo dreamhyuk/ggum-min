@@ -36,4 +36,5 @@ public class CustomerProfile {
     public CustomerProfile(Address address) {
         this.address = address;
     }
+
 }

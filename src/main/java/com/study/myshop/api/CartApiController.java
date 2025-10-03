@@ -24,17 +24,17 @@ public class CartApiController {
     private final CartRepository cartRepository;
     private final CartService cartService;
 
-//    @GetMapping("/carts/me")
-//    public ResponseEntity<ApiResponse<CartDto>> getCart(@AuthenticationPrincipal CustomUserDetails userDetails) {
-//        Member findMember = memberService.findByUsername(userDetails.getUsername());
-//
-//        Cart cart = cartRepository.findByCustomerId(findMember.getCustomerProfile().getId())
-//                .orElseThrow(() -> new IllegalArgumentException("cart not found"));
-//
-//        CartDto cartDto = new CartDto(cart);
-//
-//        return ResponseEntity.ok(ApiResponse.success(200, "장바구니 조회", cartDto));
-//    }
+/*    @GetMapping("/carts/me")
+    public ResponseEntity<ApiResponse<CartDto>> getCart(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Member findMember = memberService.findByUsername(userDetails.getUsername());
+
+        Cart cart = cartRepository.findByCustomerId(findMember.getCustomerProfile().getId())
+                .orElseThrow(() -> new IllegalArgumentException("cart not found"));
+
+        CartDto cartDto = new CartDto(cart);
+
+        return ResponseEntity.ok(ApiResponse.success(200, "장바구니 조회", cartDto));
+    }*/
     @GetMapping("/carts/me")
     public ResponseEntity<ApiResponse<CartDto>> getCart(@AuthenticationPrincipal CustomUserDetails userDetails) {
 

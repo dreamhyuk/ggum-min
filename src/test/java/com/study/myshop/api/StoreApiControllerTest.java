@@ -1,8 +1,9 @@
 package com.study.myshop.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.study.myshop.annotaion.WithMockCustomUser;
+import com.study.myshop.annotation.WithCustomMockUser;
 import com.study.myshop.authentication.CustomUserDetails;
+import com.study.myshop.authentication.UserDetailsServiceImpl;
 import com.study.myshop.domain.Address;
 import com.study.myshop.domain.Store;
 import com.study.myshop.domain.StoreCategoryMapping;
@@ -24,6 +25,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -61,6 +63,9 @@ class StoreApiControllerTest {
 
     @MockBean
     private MemberService memberService;
+
+    @MockBean
+    private UserDetailsServiceImpl userDetailsService;
 
 
     @Test
@@ -225,10 +230,30 @@ class StoreApiControllerTest {
                 .andExpect(jsonPath("$.data.name").value("testStore"));
     }
 
+    @Test
+    @DisplayName("내 가게 조회 성공")
+    @WithCustomMockUser(username = "testOwner", role = Role.ROLE_STORE_OWNER)
+    public void getMyStoresTest() throws Exception {
+        Long ownerProfileId = 1L;
+
+        // Mock 객체
+        Member mockMember = Mockito.mock(Member.class);
+        OwnerProfile mockOwnerProfile = Mockito.mock(OwnerProfile.class);
+
+        given(mockMember.getOwnerProfile()).willReturn(mockOwnerProfile);
+        given(mockOwnerProfile.getId()).willReturn(ownerProfileId);
+
+        given(memberService.findByUsername("testOwner")).willReturn(mockMember);
+        given(storeService.findStoresByOwner(ownerProfileId)).willReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/stores").with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.size()").value(0));
+    }
 
 /*    @Test
     @DisplayName("내 가게 조회 성공")
-    @WithMockUser(username = "testOwner", roles = "OWNER")
+    @WithCustomMockUser(username = "testOwner", role = "OWNER")
     public void getMyStoresTest() throws Exception {
         // given
         String username = "testOwner";
@@ -254,5 +279,6 @@ class StoreApiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.size()").value(0));
     }*/
+
 
 }
