@@ -5,6 +5,7 @@ import com.study.myshop.domain.category.StoreCategory;
 import com.study.myshop.domain.member.profile.OwnerProfile;
 import com.study.myshop.domain.menu.Menu;
 import com.study.myshop.dto.store.UpdateStoreInfoRequest;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,8 +28,11 @@ public class Store {
 
     private String storeName;
 
+    private String imageUrl;
+
     @Embedded
     private Address address;
+
 
     /**
      * Store는 Owner의 정보만 필요함.
@@ -48,6 +52,13 @@ public class Store {
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     @BatchSize(size = 10)
     private List<MenuCategory> menuCategories = new ArrayList<>();
+
+    public Store(String storeName, String imageUrl, Address address, OwnerProfile ownerProfile) {
+        this.storeName = storeName;
+        this.imageUrl = imageUrl;
+        this.address = address;
+        this.ownerProfile = ownerProfile;
+    }
 
 
     /* 연관관계 편의 메서드 */
@@ -72,7 +83,12 @@ public class Store {
     }
 
 
-    /** 생성 메서드 */
+    /**
+     * 생성 메서드
+     * ! StoreCategoryMapping 리스트는 생성 시점에 완전히 구성된 상태여야 한다.
+     * List<StoreCategoryMapping>은 Store와 StoreCategory 사이의 중간 매핑 엔티티이다.
+     * 그렇다면 이건 Store를 만든 이후에 매핑을 추가해주는 방법이 더 알맞지 않을까?
+     */
     /*  */
     public static Store createStore(String storeName, Address address, OwnerProfile ownerProfile, StoreCategoryMapping... storeCategoryMappings) {
         return new Store(storeName, address, ownerProfile, storeCategoryMappings);
@@ -82,6 +98,23 @@ public class Store {
     public static Store createStore(String storeName, Address address, OwnerProfile ownerProfile, List<StoreCategoryMapping> mappings) {
         return new Store(storeName, address, ownerProfile, mappings);
     }
+
+    /** Store 먼저 생성 후 카테고리 나중에 add */
+    public static Store create(String storeName, @Nullable String imageUrl, Address address, OwnerProfile ownerProfile) {
+        return new Store(storeName, imageUrl, address, ownerProfile);
+    }
+
+    //단건 추가
+    public void addCategoryMapping(StoreCategoryMapping mapping) {
+        this.storeCategoryMappings.add(mapping);
+        mapping.setStore(this);
+    }
+
+    //다건 추가 (편의용)
+    public void addCategoryMappings(List<StoreCategoryMapping> mappings) {
+        mappings.forEach(this::addCategoryMapping);
+    }
+
 
     //파라미터로 StoreCategory 를 직접 받아 생성
     public static Store create(String storeName, Address address, OwnerProfile ownerProfile, List<StoreCategory> categories) {
@@ -141,19 +174,19 @@ public class Store {
     /**
      * 메뉴 리스트 추가
      */
-//    public void addMenus(List<Menu> menuList) {
-//        for(Menu menu: menuList) {
-//            addMenu(menu);
-//        }
-//    }
+/*    public void addMenus(List<Menu> menuList) {
+        for(Menu menu: menuList) {
+            addMenu(menu);
+        }
+    }*/
 
     /**
      * 메뉴 리스트 삭제
      */
-//    public void removeMenus(List<Menu> menuList) {
-//        for(Menu menu: menuList) {
-//            removeMenu(menu);
-//        }
-//    }
+/*    public void removeMenus(List<Menu> menuList) {
+        for(Menu menu: menuList) {
+            removeMenu(menu);
+        }
+    }*/
 
 }

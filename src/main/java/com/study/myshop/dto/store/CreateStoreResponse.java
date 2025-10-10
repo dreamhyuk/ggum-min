@@ -9,5 +9,4 @@ public class CreateStoreResponse {
 
     private Long id;
 
-
 }

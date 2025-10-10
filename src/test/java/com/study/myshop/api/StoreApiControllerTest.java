@@ -2,11 +2,9 @@ package com.study.myshop.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.study.myshop.annotation.WithCustomMockUser;
-import com.study.myshop.authentication.CustomUserDetails;
 import com.study.myshop.authentication.UserDetailsServiceImpl;
 import com.study.myshop.domain.Address;
 import com.study.myshop.domain.Store;
-import com.study.myshop.domain.StoreCategoryMapping;
 import com.study.myshop.domain.member.Member;
 import com.study.myshop.domain.member.Role;
 import com.study.myshop.domain.member.profile.OwnerProfile;
@@ -23,12 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,11 +34,9 @@ import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

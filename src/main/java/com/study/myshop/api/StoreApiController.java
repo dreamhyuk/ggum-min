@@ -12,10 +12,14 @@ import com.study.myshop.service.StoreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -31,15 +35,27 @@ public class StoreApiController {
     /**
      * 등록
      */
-    @PostMapping
-    public ResponseEntity<ApiResponse<CreateStoreResponse>> saveStore(@RequestBody @Valid CreateStoreRequest request,
-                                                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<CreateStoreResponse>> saveStore(
+            @ModelAttribute @Valid CreateStoreRequest request,
+            BindingResult bindingResult,
+            @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
+
+        //Validation 체크
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.fail(400, "입력값 오류"));
+        }
+
+        //DTO 안의 imageFile 포함해서 Service로 전달
         Long id = storeService.saveStore(request, userDetails);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(201, "매장 생성!", new CreateStoreResponse(id)));
     }
+
 
     /**
      * 수정

@@ -26,10 +26,16 @@ import com.study.myshop.repository.query.MenuQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
@@ -46,15 +52,42 @@ public class StoreService {
     private final MenuQueryRepository menuQueryRepository;
 
 
+    /**
+     * 로컬 환경에 uploads폴더를 생성해서 이미지 저장
+     * 렌더링에서 이미지 잘 보임.
+     */
     @Transactional
-    public Long saveStore(CreateStoreRequest request, CustomUserDetails userDetails) {
+    public Long saveStore(CreateStoreRequest request, CustomUserDetails userDetails) throws IOException {
         Member member = memberRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new MemberNotFoundException("해당 유저 없음."));
+
+        //이미지 처리 (DTO 안에서 꺼냄)
+        MultipartFile imageFile = request.getImageFile();
+        String imageUrl = null;
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            Path uploadDir = Paths.get(System.getProperty("user.dir"), "uploads");
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
+
+            String filename = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
+            Path filePath = uploadDir.resolve(filename);
+            imageFile.transferTo(filePath.toFile());
+
+            imageUrl = "/uploads/" + filename;
+        }
 
         Address address = new Address(request.getCity(), request.getStreet(), request.getZipcode());
         List<StoreCategoryMapping> mappings = createMappings(request.getCategoryIds());
 
-        Store store = Store.createStore(request.getStoreName(), address, member.getOwnerProfile(), mappings);
+        Store store = Store.create(
+                request.getStoreName(),
+                imageUrl,
+                address,
+                member.getOwnerProfile()
+        );
+        store.addCategoryMappings(mappings);
 
         storeRepository.save(store);
 

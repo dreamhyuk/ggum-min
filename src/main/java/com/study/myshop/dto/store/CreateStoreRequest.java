@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,20 +20,25 @@ public class CreateStoreRequest {
 
     private String storeName;
 
+    private MultipartFile imageFile;
+    private String imageUrl;
+
     private String city;
     private String street;
     private String zipcode;
 
     private List<Long> categoryIds;
 
-    //설명이나 이미지 등이 필요하면
+
+    //설명 등이 필요하면
 //    private String description;
-//    private String imageUrl;
 
 
     public CreateStoreRequest(Store store) {
         this.storeId = store.getId();
         this.storeName = store.getStoreName();
+        this.imageFile = null;
+        this.imageUrl = store.getImageUrl();
 
         if (store.getAddress() != null) {
             this.city = store.getAddress().getCity();

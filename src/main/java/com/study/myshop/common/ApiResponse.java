@@ -3,11 +3,17 @@ package com.study.myshop.common;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.validation.ObjectError;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ApiResponse<T> {
+
+
 
     private int status;      // HTTP status code (200, 400, 500 등)
     private String message;  // 응답 메시지 ("성공", "에러", 등)
@@ -30,6 +36,10 @@ public class ApiResponse<T> {
     }
 
     public static <T> ApiResponse<T> error(int status, String message) {
+        return new ApiResponse<>(status, message, null);
+    }
+
+    public static <T> ApiResponse<T> fail(int status, String message) {
         return new ApiResponse<>(status, message, null);
     }
 }
