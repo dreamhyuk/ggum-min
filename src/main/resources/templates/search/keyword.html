@@ -69,8 +69,10 @@
         const card = document.createElement('a');
         card.classList.add('store-card');
         card.href = `/stores/${store.storeId}`; // 매장 상세 페이지로 이동
+        const baseUrl = "http://localhost:8080";
+        const fullImageUrl = `${baseUrl}${store.imageUrl}`;
         card.innerHTML = `
-          <img src="/images/store-placeholder.png" alt="${store.storeName}">
+          <img src="${fullImageUrl}" alt="${store.storeName}">
           <h3>${store.storeName}</h3>
         `;
         container.appendChild(card);
