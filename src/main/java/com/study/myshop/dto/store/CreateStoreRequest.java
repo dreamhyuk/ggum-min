@@ -20,7 +20,7 @@ public class CreateStoreRequest {
 
     private String storeName;
 
-    private MultipartFile imageFile;
+//    private MultipartFile imageFile;
     private String imageUrl;
 
     private String city;
@@ -37,7 +37,6 @@ public class CreateStoreRequest {
     public CreateStoreRequest(Store store) {
         this.storeId = store.getId();
         this.storeName = store.getStoreName();
-        this.imageFile = null;
         this.imageUrl = store.getImageUrl();
 
         if (store.getAddress() != null) {

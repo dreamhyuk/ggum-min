@@ -9,28 +9,28 @@
 <body>
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
-    <form id="store-form" role="form" enctype="multipart/form-data">
+    <form id="store-form" role="form">
         <div class="form-group">
-            <label th:for="name">가게 이름</label>
+            <label>가게 이름</label>
             <input type="text" name="storeName" class="form-control" placeholder="가게 이름을 입력하세요">
-            <!--            <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Incorrect date</p>-->
         </div>
 
         <div class="form-group">
-            <label th:for="imageFile">가게 이미지</label>
-            <input type="file" name="imageFile" class="form-control" accept="image/*">
+            <label>가게 이미지</label>
+            <input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*">
+            <input type="hidden" name="imageUrl"> <!-- presigned 업로드 후 URL을 여기에 저장 -->
         </div>
 
         <div class="form-group">
-            <label th:for="city">도시</label>
+            <label>도시</label>
             <input type="text" name="city" class="form-control" placeholder="도시를 입력하세요">
         </div>
         <div class="form-group">
-            <label th:for="street">거리</label>
+            <label>거리</label>
             <input type="text" name="street" class="form-control" placeholder="거리를 입력하세요">
         </div>
         <div class="form-group">
-            <label th:for="zipcode">우편번호</label>
+            <label>우편번호</label>
             <input type="text" name="zipcode" class="form-control" placeholder="우편번호를 입력하세요">
         </div>
 
@@ -53,9 +53,11 @@
     <div th:replace="fragments/footer :: footer" />
 </div> <!-- /container -->
 
+
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // 체크박스 최대 2개 제한
+document.addEventListener('DOMContentLoaded', () => {
+
+    //체크박스 최대 2개 제한
     document.querySelectorAll('.category-checkbox').forEach(checkbox => {
         checkbox.addEventListener('change', () => {
             const checked = document.querySelectorAll('.category-checkbox:checked');
@@ -66,34 +68,79 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Form 제출 시 API 호출
     const form = document.getElementById('store-form');
-    form.addEventListener('submit', async function(event) {
-        event.preventDefault(); // 브라우저 기본 제출 차단
 
-        const formData = new FormData(form); // form 요소 그대로 FormData로 전송
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-        try {
-            const response = await fetch('/api/stores', {
-                method: 'POST',
-                body: formData,
-                credentials: 'include' // 필요시 쿠키 포함
-            });
+        const fileInput = document.getElementById('imageFile');
+        const file = fileInput.files[0];
 
-            if (response.ok) {
-                const result = await response.json();
-                alert("매장이 생성되었습니다! ID: " + result.data.id);
-                window.location.href = "/owner/home"; // 생성 후 이동
-            } else {
-                const error = await response.json();
-                alert("에러 발생: " + (error.message || "알 수 없는 오류"));
-            }
-        } catch (e) {
-            alert("요청 실패: " + e.message);
+        //Presigned URL 요청
+        const fileRequest = {
+            fileName: file.name,
+            contentType: file.type
+        };
+
+        const presignedResponse = await fetch('/api/files/presigned-url', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(fileRequest)
+        });
+
+        if (!presignedResponse.ok) {
+            alert("Presigned URL 발급 실패");
+            return;
+        }
+
+        const { presignedUrl, fileUrl } = await presignedResponse.json();
+
+        //S3에 업로드 (PUT)
+        const uploadResponse = await fetch(presignedUrl, {
+            method: 'PUT',
+            body: file
+        });
+
+        if (!uploadResponse.ok) {
+            alert("이미지 업로드 실패");
+            return;
+        }
+
+        //카테고리 선택값 동적으로 수집
+        const checkedBoxes = document.querySelectorAll('.category-checkbox:checked');
+        const categoryIds = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+
+        if (categoryIds.length === 0) {
+            alert("카테고리를 최소 1개 이상 선택해주세요.");
+            return;
+        }
+
+        //최종 Store 등록 요청
+        const storeRequest = {
+            storeName: form.querySelector('input[name="storeName"]').value,
+            imageUrl: fileUrl, // S3 업로드된 이미지 URL
+            city: form.querySelector('input[name="city"]').value,
+            street: form.querySelector('input[name="street"]').value,
+            zipcode: form.querySelector('input[name="zipcode"]').value,
+            categoryIds: categoryIds
+        };
+
+        const storeResponse = await fetch('/api/stores', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(storeRequest)
+        });
+
+        if (storeResponse.ok) {
+            const result = await storeResponse.json();
+            alert("가게 등록 성공! ID: " + result.data.id);
+            window.location.href = "/owner/home";
+        } else {
+            const err = await storeResponse.json();
+            alert("가게 등록 실패: " + (err.message || "알 수 없는 오류"));
         }
     });
 });
-
 </script>
 </body>
 </html>

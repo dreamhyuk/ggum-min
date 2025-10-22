@@ -35,7 +35,8 @@ public class StoreApiController {
     /**
      * 등록
      */
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    //로컬에서 이미지 저장
+/*    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<CreateStoreResponse>> saveStore(
             @ModelAttribute @Valid CreateStoreRequest request,
             BindingResult bindingResult,
@@ -49,6 +50,21 @@ public class StoreApiController {
         }
 
         //DTO 안의 imageFile 포함해서 Service로 전달
+        Long id = storeService.saveStore(request, userDetails);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success(201, "매장 생성!", new CreateStoreResponse(id)));
+    }*/
+
+    //S3에 저장하는 방식
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse<CreateStoreResponse>> saveStore(
+            @RequestBody @Valid CreateStoreRequest request,
+            BindingResult bindingResult,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        //DTO 안의 imageUrl을 포함해서 Service로 전달 (S3 업로드는 클라이언트에서 수행)
         Long id = storeService.saveStore(request, userDetails);
 
         return ResponseEntity

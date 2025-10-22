@@ -53,30 +53,15 @@ public class StoreService {
 
 
     /**
-     * 로컬 환경에 uploads폴더를 생성해서 이미지 저장
-     * 렌더링에서 이미지 잘 보임.
+     * dto를 받아서 저장
      */
     @Transactional
-    public Long saveStore(CreateStoreRequest request, CustomUserDetails userDetails) throws IOException {
+    public Long saveStore(CreateStoreRequest request, CustomUserDetails userDetails) {
         Member member = memberRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new MemberNotFoundException("해당 유저 없음."));
 
         //이미지 처리 (DTO 안에서 꺼냄)
-        MultipartFile imageFile = request.getImageFile();
-        String imageUrl = null;
-
-        if (imageFile != null && !imageFile.isEmpty()) {
-            Path uploadDir = Paths.get(System.getProperty("user.dir"), "uploads");
-            if (!Files.exists(uploadDir)) {
-                Files.createDirectories(uploadDir);
-            }
-
-            String filename = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-            Path filePath = uploadDir.resolve(filename);
-            imageFile.transferTo(filePath.toFile());
-
-            imageUrl = "/uploads/" + filename;
-        }
+        String imageUrl = request.getImageUrl(); // 클라이언트가 보낸 URL 그대로 사용
 
         Address address = new Address(request.getCity(), request.getStreet(), request.getZipcode());
         List<StoreCategoryMapping> mappings = createMappings(request.getCategoryIds());

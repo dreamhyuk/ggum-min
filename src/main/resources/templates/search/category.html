@@ -63,14 +63,16 @@
       const stores = json.data;
 
       const container = document.getElementById('items');
-      container.innerHTML = ''; // 초기화
+      container.innerHTML = '';
 
       stores.forEach(store => {
         const card = document.createElement('a');
         card.classList.add('store-card');
-        card.href = `/stores/${store.storeId}`; // 매장 상세 페이지로 이동
-        const baseUrl = "http://localhost:8080";
-        const fullImageUrl = `${baseUrl}${store.imageUrl}`;
+        card.href = `/stores/${store.storeId}`;
+
+        // S3 URL을 그대로 사용
+        const fullImageUrl = store.imageUrl;
+
         card.innerHTML = `
           <img src="${fullImageUrl}" alt="${store.storeName}">
           <h3>${store.storeName}</h3>
