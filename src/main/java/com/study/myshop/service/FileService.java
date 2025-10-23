@@ -25,9 +25,11 @@ public class FileService {
     @Value("${cloud.aws.region.static}")
     private String region;
 
+
     public PresignedUrlResponse getPresignedUrl(FileRequestDto request) {
         // 만료 시간 설정 (예: 5분)
         Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 5);
+
 
         // S3에 presigned URL 생성
         GeneratePresignedUrlRequest generatePresignedUrlRequest =
