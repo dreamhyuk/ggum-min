@@ -56,6 +56,7 @@ public class StoreApiController {
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(201, "매장 생성!", new CreateStoreResponse(id)));
     }*/
+
     //S3에 저장하는 방식
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<CreateStoreResponse>> saveStore(
@@ -70,6 +71,7 @@ public class StoreApiController {
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(201, "매장 생성!", new CreateStoreResponse(id)));
     }
+
 
     /**
      * 수정
