@@ -71,7 +71,6 @@ public class StoreApiController {
                 .body(ApiResponse.success(201, "매장 생성!", new CreateStoreResponse(id)));
     }
 
-
     /**
      * 수정
      */
