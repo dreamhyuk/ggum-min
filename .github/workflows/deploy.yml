@@ -41,6 +41,17 @@ jobs:
       - name: Generate application.yml for CI test
         run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > src/main/resources/application.yml
 
+      - name: Wait for MariaDB to be ready
+        run: |
+          for i in {1..30}; do
+            if mysqladmin ping -h mariadb -u myuser -pmypass --silent; then
+              echo "MariaDB is ready!"
+              break
+            fi
+            echo "Waiting for MariaDB..."
+            sleep 3
+          done
+
       - name: Build with Test
         run: ./gradlew clean build
 
